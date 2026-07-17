@@ -72,6 +72,7 @@ a{color:var(--blue);}
 <button id="tab-log" class="on" onclick="go('log')"><span class="ic">➕</span>Log</button>
 <button id="tab-hist" onclick="go('hist')"><span class="ic">📖</span>History</button>
 <button id="tab-data" onclick="go('data')"><span class="ic">📤</span>Export</button>
+<button id="tab-elbow" onclick="go('elbow')"><span class="ic">🩹</span>Elbow</button>
 <button id="tab-info" onclick="go('info')"><span class="ic">ℹ️</span>Guide</button>
 </div>
 
@@ -81,39 +82,39 @@ a{color:var(--blue);}
 // type: w=weight/reps/RIR, r=reps/RIR, t=minutes, x=done+note
 var PROGRAM={
  A:{name:"Day A — Lower: Power + Squat",items:[
-  {s:"Power",id:"a_tbjump",n:"Trap-bar jump",t:"r",sets:4,tg:"4 × 3 · max speed"},
-  {s:"Power",id:"a_broad",n:"Broad jump",t:"r",sets:3,tg:"3 × 3 · bodyweight"},
-  {s:"Strength",id:"a_fsq",n:"Front squat",t:"w",sets:4,tg:"4 × 4–5 · ~125 lb · 1–2 RIR"},
-  {s:"Strength",id:"a_bss",n:"Bulgarian split squat (DB)",t:"w",sets:3,tg:"3 × 6–8 / leg · 2 RIR"},
-  {s:"Hypertrophy",id:"a_ham",n:"Leg curl / Nordic-assisted",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR"},
-  {s:"Hypertrophy",id:"a_lp",n:"Leg press or hack squat",t:"w",sets:2,tg:"2 × 12–15 · 1–2 RIR"},
-  {s:"Hypertrophy",id:"a_scr",n:"Seated (bent-knee) calf raise",t:"w",sets:3,tg:"3 × 12–15 · soleus"},
-  {s:"Core + Mobility",id:"a_pallof",n:"Pallof press (anti-rotation)",t:"w",sets:2,tg:"2 × 10 / side · light"},
+  {s:"Power",id:"a_tbjump",n:"Trap-bar jump",t:"wr",sets:4,tg:"4 × 3 · light load · max speed",v:"https://www.youtube.com/watch?v=rZGkx5PaZSM"},
+  {s:"Power",id:"a_broad",n:"Broad jump",t:"r",sets:3,tg:"3 × 3 · bodyweight",v:"https://www.youtube.com/watch?v=q7851uL2M8c"},
+  {s:"Strength",id:"a_fsq",n:"Front squat",t:"w",sets:4,tg:"4 × 4–5 · ~125 lb · 1–2 RIR",v:"https://www.youtube.com/watch?v=0ect9ETE6t0"},
+  {s:"Strength",id:"a_bss",n:"Bulgarian split squat (DB)",t:"w",sets:3,tg:"3 × 6–8 / leg · 2 RIR",v:"https://www.youtube.com/watch?v=hiLF_pF3EJM"},
+  {s:"Hypertrophy",id:"a_ham",n:"Leg curl (machine)",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=P7-RxTVe6O0"},
+  {s:"Hypertrophy",id:"a_lp",n:"Leg press or hack squat",t:"w",sets:2,tg:"2 × 12–15 · 1–2 RIR",v:"https://www.youtube.com/watch?v=K5n2vg3oZa4"},
+  {s:"Hypertrophy",id:"a_scr",n:"Seated (bent-knee) calf raise",t:"w",sets:3,tg:"3 × 12–15 · soleus",v:"https://www.youtube.com/watch?v=ORY-ke6vcgk"},
+  {s:"Core + Mobility",id:"a_pallof",n:"Dead bug (anti-rotation core)",t:"r",sets:2,tg:"2 × 8–10 / side · slow",v:"https://www.youtube.com/watch?v=3eqodmkpkfA"},
   {s:"Core + Mobility",id:"a_mob",n:"Ankle + hip finisher",t:"x",tg:"5 min"}
  ]},
  B:{name:"Day B — Upper: Push/Pull (shoulder-safe)",items:[
-  {s:"Power",id:"b_mb",n:"Rotational med-ball throw (wall)",t:"r",sets:3,tg:"3 × 4 / side · max intent"},
-  {s:"Strength",id:"b_bench",n:"Neutral-grip DB bench press",t:"w",sets:4,tg:"4 × 5–6 · 1–2 RIR"},
-  {s:"Strength",id:"b_pull",n:"Assisted pull-up (log assist as load)",t:"w",sets:4,tg:"4 × 5–8 · ~60 lb assist"},
-  {s:"Push / Pull",id:"b_lm",n:"Landmine press (½-kneeling)",t:"w",sets:3,tg:"3 × 8–10 / side · 2 RIR"},
-  {s:"Push / Pull",id:"b_row",n:"Chest-supported DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR"},
-  {s:"Hypertrophy + Arms",id:"b_inc",n:"Incline DB press",t:"w",sets:2,tg:"2 × 12 · 1–2 RIR"},
-  {s:"Hypertrophy + Arms",id:"b_face",n:"Face pull (rear delts / cuff)",t:"w",sets:2,tg:"2 × 12–15 · elbows high"},
-  {s:"Hypertrophy + Arms",id:"b_curl",n:"DB biceps curl",t:"w",sets:2,tg:"2 × 12–15"},
-  {s:"Hypertrophy + Arms",id:"b_tri",n:"Triceps pushdown",t:"w",sets:2,tg:"2 × 12–15"},
-  {s:"Core + Mobility",id:"b_carry",n:"Suitcase carry",t:"w",sets:2,tg:"2 × 30 m / side · mod–heavy"},
+  {s:"Power",id:"b_mb",n:"Rotational med-ball throw (wall)",t:"r",sets:3,tg:"3 × 4 / side · max intent",v:"https://www.youtube.com/watch?v=o9BC7lgN1bo"},
+  {s:"Strength",id:"b_bench",n:"Neutral-grip DB bench press",t:"w",sets:4,tg:"4 × 5–6 · 1–2 RIR",v:"https://www.youtube.com/watch?v=315SmTiVJAU"},
+  {s:"Strength",id:"b_pull",n:"Assisted pull-up (log assist as load)",t:"w",sets:4,tg:"4 × 5–8 · ~60 lb assist",v:"https://www.youtube.com/watch?v=gx0RWT7WbmA"},
+  {s:"Push / Pull",id:"b_lm",n:"Landmine press (½-kneeling)",t:"w",sets:3,tg:"3 × 8–10 / side · 2 RIR",v:"https://www.youtube.com/watch?v=Yt3ZGWUE6v8"},
+  {s:"Push / Pull",id:"b_row",n:"Chest-supported DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=qiCgZq3GnVY"},
+  {s:"Hypertrophy + Arms",id:"b_inc",n:"Incline DB press",t:"w",sets:2,tg:"2 × 12 · 1–2 RIR",v:"https://www.youtube.com/watch?v=awEEyL5zGvU"},
+  {s:"Hypertrophy + Arms",id:"b_face",n:"Face pull (rear delts / cuff)",t:"w",sets:2,tg:"2 × 12–15 · elbows high",v:"https://www.youtube.com/watch?v=eQaSpG7aMYQ"},
+  {s:"Hypertrophy + Arms",id:"b_curl",n:"DB biceps curl",t:"w",sets:2,tg:"2 × 12–15",v:"https://www.youtube.com/watch?v=XE_pHwbst04"},
+  {s:"Hypertrophy + Arms",id:"b_tri",n:"Triceps pushdown",t:"w",sets:2,tg:"2 × 12–15",v:"https://www.youtube.com/watch?v=_w-HpW70nSQ"},
+  {s:"Core + Mobility",id:"b_carry",n:"Suitcase carry",t:"w",sets:2,tg:"2 × 30 m / side · mod–heavy",v:"https://www.youtube.com/watch?v=T9A607GaR2w"},
   {s:"Core + Mobility",id:"b_mob",n:"T-spine + shoulder finisher",t:"x",tg:"5 min"}
  ]},
  C:{name:"Day C — Total Body + Hinge + Aerobic",items:[
   {s:"Agility + Power",id:"c_agil",n:"Agility: backpedal / lateral / carioca",t:"x",tg:"3 rounds · submaximal (AM)"},
-  {s:"Agility + Power",id:"c_pogo",n:"Pogo hops / jump rope",t:"r",sets:3,tg:"3 × 15–20 · gastroc"},
-  {s:"Strength",id:"c_tbdl",n:"Trap-bar deadlift",t:"w",sets:4,tg:"4 × 4–5 · ~230 lb · 1–2 RIR"},
-  {s:"Strength",id:"c_lunge",n:"DB reverse lunge (or step-up)",t:"w",sets:3,tg:"3 × 8–10 / leg · 2 RIR"},
-  {s:"Push / Pull + Calves",id:"c_push",n:"Push-up or DB floor press",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR"},
-  {s:"Push / Pull + Calves",id:"c_row",n:"Single-arm DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR"},
-  {s:"Push / Pull + Calves",id:"c_calf",n:"Standing calf raise",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR"},
-  {s:"Core + Aerobic",id:"c_db",n:"Dead bug",t:"r",sets:2,tg:"2 × 8–10 / side"},
-  {s:"Core + Aerobic",id:"c_sp",n:"Side plank",t:"t",tg:"2 × 30–45 s / side"},
+  {s:"Agility + Power",id:"c_pogo",n:"Pogo hops / jump rope",t:"r",sets:3,tg:"3 × 15–20 · gastroc",v:"https://www.youtube.com/watch?v=j0nl5dWuqN4"},
+  {s:"Strength",id:"c_tbdl",n:"Trap-bar deadlift",t:"w",sets:4,tg:"4 × 4–5 · ~230 lb · 1–2 RIR",v:"https://www.youtube.com/watch?v=tpUKFfIFG24"},
+  {s:"Strength",id:"c_lunge",n:"DB reverse lunge (or step-up)",t:"w",sets:3,tg:"3 × 8–10 / leg · 2 RIR",v:"https://www.youtube.com/watch?v=Q2k3kYbtOcI"},
+  {s:"Push / Pull + Calves",id:"c_push",n:"Push-up or DB floor press",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=AqYFvc9t_vU"},
+  {s:"Push / Pull + Calves",id:"c_row",n:"Single-arm DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=tLnlWj7LQ34"},
+  {s:"Push / Pull + Calves",id:"c_calf",n:"Standing calf raise",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=97NbelB5yvQ"},
+  {s:"Core + Aerobic",id:"c_db",n:"Dead bug",t:"r",sets:2,tg:"2 × 8–10 / side",v:"https://www.youtube.com/watch?v=3eqodmkpkfA"},
+  {s:"Core + Aerobic",id:"c_sp",n:"Side plank",t:"t",tg:"2 × 30–45 s / side",v:"https://www.youtube.com/watch?v=iNbH7_edNI8"},
   {s:"Core + Aerobic",id:"c_z2",n:"Zone 2 finisher (bike/row/walk)",t:"t",tg:"25–30 min · conversational"}
  ]}
 };
@@ -134,8 +135,8 @@ function e1rm(w,r){w=parseFloat(w);r=parseFloat(r);if(!w||!r)return null;return 
 function lastFor(id){for(var i=DB.sessions.length-1;i>=0;i--){var e=DB.sessions[i].entries[id];if(e&&e.sets&&e.sets.some(function(s){return s.w||s.r||s.min;}))return{sess:DB.sessions[i],e:e};}return null;}
 
 /* ---------- ROUTER ---------- */
-function go(v){view=v;["log","hist","data","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
-function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else renderInfo(a);}
+function go(v){view=v;["log","hist","data","elbow","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
+function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else if(view==="elbow")renderElbow(a);else renderInfo(a);}
 
 /* ---------- LOG ---------- */
 function renderLog(a){
@@ -171,6 +172,7 @@ function exCard(it){
  var card=el('<div class="card"></div>');
  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
  card.appendChild(el('<div class="tgt">'+esc(it.tg)+'</div>'));
+ if(it.v)card.appendChild(el('<div class="meta">\u25B6 <a href="'+it.v+'" target="_blank" rel="noopener">Watch demo</a></div>'));
  // last-time
  var lf=lastFor(it.id);
  if(lf){var parts=lf.e.sets.filter(function(s){return s.w||s.r||s.min;}).map(function(s){return s.min?(s.min+"min"):((s.w?s.w+"×":"")+(s.r||"?")+(s.rir!==""&&s.rir!=null?"@"+s.rir:""));});
@@ -188,6 +190,7 @@ function exCard(it){
  if(ent.sets.length===0){var n=it.sets||3;for(var i=0;i<n;i++)ent.sets.push({w:"",r:"",rir:"",min:""});}
  // caption
  if(it.t==="w")card.appendChild(el('<div class="caps"><span>Load</span><span>Reps</span><span>RIR</span></div>'));
+ else if(it.t==="wr")card.appendChild(el('<div class="caps"><span>Load</span><span>Reps</span></div>'));
  else if(it.t==="r")card.appendChild(el('<div class="caps"><span>Reps</span><span>RIR</span></div>'));
  else card.appendChild(el('<div class="caps"><span>Minutes</span></div>'));
  var body=el('<div></div>');
@@ -197,13 +200,17 @@ function exCard(it){
    var r=el('<div class="setrow"><div class="n">'+(i+1)+'</div></div>');
    function mk(field,ph){var inp=el('<input type="number" inputmode="decimal" placeholder="'+ph+'" value="'+(st[field]!==undefined?st[field]:"")+'">');inp.addEventListener("input",function(e){st[field]=e.target.value;save();updEst();});return inp;}
    if(it.t==="w"){r.appendChild(mk("w","lb"));r.appendChild(mk("r","reps"));r.appendChild(mk("rir","rir"));}
+   else if(it.t==="wr"){r.appendChild(mk("w","lb"));r.appendChild(mk("r","reps"));}
    else if(it.t==="r"){r.appendChild(mk("r","reps"));r.appendChild(mk("rir","rir"));}
    else{r.appendChild(mk("min","min"));}
    body.appendChild(r);
   });
  }
  drawSets();card.appendChild(body);
- var add=el('<button class="addset">+ add set</button>');add.onclick=function(){ent.sets.push({w:"",r:"",rir:"",min:""});save();drawSets();};card.appendChild(add);
+ var setbtns=el('<div class="row"></div>');
+ var add=el('<button class="addset">+ add set</button>');add.onclick=function(){ent.sets.push({w:"",r:"",rir:"",min:""});save();drawSets();};
+ var rm=el('<button class="addset">− remove set</button>');rm.onclick=function(){if(ent.sets.length>1){ent.sets.pop();save();drawSets();updEst();}};
+ setbtns.appendChild(add);setbtns.appendChild(rm);card.appendChild(setbtns);
  var est=el('<div class="est"></div>');card.appendChild(est);
  function updEst(){if(it.t!=="w"){est.textContent="";return;}var best=0;ent.sets.forEach(function(s){var e=e1rm(s.w,s.r);if(e&&e>best)best=e;});est.textContent=best?("Est. 1RM ≈ "+best+" lb"):"";}
  updEst();
@@ -287,6 +294,33 @@ function renderData(a){
  imp.addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(o&&o.sessions){if(confirm("Replace current data with this backup? ("+o.sessions.length+" workouts)")){DB=o;save();alert("Restored.");go("hist");}}else alert("Not a valid backup file.");}catch(x){alert("Could not read that file.");}};rd.readAsText(f);});
  a.appendChild(imp);
  a.appendChild(el('<div class="mut" style="margin-top:16px">'+DB.sessions.length+' workouts stored on this phone.</div>'));
+}
+
+/* ---------- ELBOW ---------- */
+function vid(url,label,chan){return '<div class="meta">▶ <a href="'+url+'" target="_blank" rel="noopener">'+label+'</a> · '+chan+'</div>';}
+function renderElbow(a){
+ document.getElementById("hdrS").textContent="Elbow protocol";
+ a.appendChild(el('<h2 class="scr">Elbow Protocol 🩹</h2>'));
+ a.appendChild(el('<div class="note">Early lateral elbow tendinopathy (“tennis elbow”). The fix is load management + progressive loading — not rest alone. Golden rule for every exercise here: pain <b>≤3–4/10</b> during, and it must <b>settle within 24 h</b>. Worse the next morning → drop back a step. Tendons are slow — think 6–12 weeks.</div>'));
+
+ a.appendChild(el('<div class="sec-h">Daily Rehab — do in order</div>'));
+
+ a.appendChild(el('<div class="card"><div class="exn">1 · Isometric wrist extension</div><div class="tgt">5 × 30–45 s hold · rest 30–60 s · 2–3×/day</div><div class="meta">Forearm on table, palm DOWN, wrist off the edge, light DB (1–2 lb). Raise the wrist slightly above neutral and HOLD still — no movement. This one is a pain-reliever; start it today.</div>'+vid("https://www.youtube.com/watch?v=9B-c6lx5k9A","Watch demo","SPARC Physiotherapy")+'</div>'));
+
+ a.appendChild(el('<div class="card"><div class="exn">2 · Wrist extensor stretch</div><div class="tgt">20–30 s × 3 · 2–3×/day · gentle</div><div class="meta">Arm straight out, elbow locked, palm DOWN. With the other hand, gently bend the wrist down and slightly toward the pinky until you feel a stretch along the TOP of the forearm. Never sharp. Do it after the loading work.</div>'+vid("https://health.clevelandclinic.org/tennis-elbow-exercises","Illustrated guide","Cleveland Clinic")+'</div>'));
+
+ a.appendChild(el('<div class="card"><div class="exn">3 · Eccentric wrist extension (dumbbell)</div><div class="tgt">3 × 15 · once daily · the healing driver</div><div class="meta">Same setup, light DB. Use your OTHER hand to lift the weight up into full wrist extension — then let go and <b>lower it slowly over 3–4 s</b> using only the injured side. The slow lowering is what remodels the tendon. Add small load once 3×15 is easy and pain-free.</div>'+vid("https://www.youtube.com/watch?v=0-VJoF6Y4dU","Watch demo","Evolve Physical Therapy")+'</div>'));
+
+ a.appendChild(el('<div class="card"><div class="exn">4 · Tyler Twist (FlexBar)</div><div class="tgt">3 × 15 · once daily · strongest evidence</div><div class="meta">Needs a Thera-Band FlexBar (~$15–25; red = softest, start there). Hold it vertically in the injured hand, wrist cocked back; grab the top with the healthy hand. Twist to load it, bring arms out front (bar horizontal), then <b>slowly untwist over 3–4 s</b> by letting the injured wrist rotate into flexion.</div>'+vid("https://www.youtube.com/watch?v=we4UoiKG3Co","Watch demo","Jamie S. Dreyer")+'</div>'));
+
+ a.appendChild(el('<div class="sec-h">Elbow-Sparing Day B — swaps</div>'));
+ a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Keep</b> — neutral-grip DB bench, landmine press, face pull (light grip). Pressing doesn’t provoke the tendon.<br><br><b style="color:var(--txt)">Modify</b> — go neutral / hammer grip on all rows, and use <b>lifting straps</b> so grip is never the limiter (this is the #1 change).<br><br><b style="color:var(--txt)">Pause</b> — straight-bar & reverse curls, heavy static gripping, and pronated (palm-down) rows/pulldowns. Reintroduce as it settles.</div>'));
+ a.appendChild(el('<div class="card"><div class="exn">Lifting straps — how</div><div class="meta">Loop around wrist, wrap around the bar, roll the bar toward you to cinch. Takes grip off the injured tendon on rows and the trap-bar hinge.</div>'+vid("https://www.youtube.com/watch?v=BEkC01Mn1K0","Watch demo","Barbell Logic")+'</div>'));
+
+ a.appendChild(el('<div class="sec-h">Counterforce strap</div>'));
+ a.appendChild(el('<div class="card"><div class="meta">Wear it ~2 finger-widths BELOW the elbow crease, pad over the forearm muscle (not the bony bump). Snug, not tingly. A crutch for tennis & lifting — not the cure. Take it off the rest of the day.</div>'+vid("https://www.youtube.com/watch?v=QlHdYlITy-k","Placement demo","Dr Laina")+'</div>'));
+
+ a.appendChild(el('<div class="note">See a physio / sports doc if: worse after ~2 weeks · night or rest pain · weakness / dropping things · numbness or tingling into the hand (that’s nerve, not tendon) · no better by 3–4 weeks. This screen is training guidance, not a diagnosis.</div>'));
 }
 
 /* ---------- INFO ---------- */
