@@ -125,7 +125,7 @@ var KEY="aa_logger_v1";
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{sessions:[],draft:null};}catch(e){return{sessions:[],draft:null};}}
 function save(){localStorage.setItem(KEY,JSON.stringify(DB));}
 var DB=load();
-var view="log";
+var view="log";var logScreen=null;var previewDay=null;
 
 /* ---------- HELPERS ---------- */
 function el(h){var d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;}
@@ -135,37 +135,62 @@ function e1rm(w,r){w=parseFloat(w);r=parseFloat(r);if(!w||!r)return null;return 
 function lastFor(id){for(var i=DB.sessions.length-1;i>=0;i--){var e=DB.sessions[i].entries[id];if(e&&e.sets&&e.sets.some(function(s){return s.w||s.r||s.min;}))return{sess:DB.sessions[i],e:e};}return null;}
 
 /* ---------- ROUTER ---------- */
-function go(v){view=v;["log","hist","data","elbow","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
+function go(v){if(v==="log"){logScreen=null;previewDay=null;}view=v;["log","hist","data","elbow","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
 function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else if(view==="elbow")renderElbow(a);else renderInfo(a);}
 
 /* ---------- LOG ---------- */
 function renderLog(a){
+ if(logScreen==="preview"&&previewDay){renderPreview(a,previewDay);return;}
  var d=DB.draft;
- if(!d){
-  document.getElementById("hdrS").textContent="Block 1 · start a workout";
-  a.appendChild(el('<div class="note">Pick your week, then the day. Your program is pre-loaded. Everything you type is saved automatically on this phone.</div>'));
-  a.appendChild(el('<div class="lbl">Week of block</div>'));
-  var wk=el('<div class="pick"></div>');[1,2,3,4].forEach(function(w){var c=el('<div class="chip">W'+w+(w===4?"·DL":"")+'</div>');c.onclick=function(){sel.week=w;[].forEach.call(wk.children,function(x,i){x.classList.toggle("on",i===w-1);});};wk.appendChild(c);});a.appendChild(wk);
-  a.appendChild(el('<div class="lbl">Day</div>'));
-  ["A","B","C"].forEach(function(k){var b=el('<button class="btn sec">Day '+k+' — '+esc(PROGRAM[k].name.split("—")[1].trim())+'</button>');b.onclick=function(){if(!sel.week){alert("Pick a week first");return;}startSession(k,sel.week);};a.appendChild(b);});
-  var last=DB.sessions[DB.sessions.length-1];
-  if(last)a.appendChild(el('<div class="mut" style="margin-top:14px">Last logged: '+esc(last.date)+' · Day '+last.day+' (W'+last.week+')</div>'));
-  return;
- }
- // active session
+ if(d&&logScreen!=="pick"){renderSession(a,d);return;}
+ renderPicker(a);
+}
+function renderPicker(a){
+ if(!sel.week)sel.week=(DB.sessions.length?DB.sessions[DB.sessions.length-1].week:1);
+ document.getElementById("hdrS").textContent="Choose a day";
+ if(DB.draft){var dr=DB.draft;var res=el('<button class="btn gold">▶ Resume: Day '+dr.day+' · Week '+dr.week+'</button>');res.onclick=function(){logScreen=null;render();};a.appendChild(res);}
+ a.appendChild(el('<div class="note">Tap a day to see its exercises and what you did last time. Press <b>Start</b> inside to log it. Everything is saved on this phone.</div>'));
+ a.appendChild(el('<div class="lbl">Week of block</div>'));
+ var wk=el('<div class="pick"></div>');[1,2,3,4].forEach(function(w){var c=el('<div class="chip'+(sel.week===w?' on':'')+'">W'+w+(w===4?"·DL":"")+'</div>');c.onclick=function(){sel.week=w;[].forEach.call(wk.children,function(x,i){x.classList.toggle("on",i===w-1);});};wk.appendChild(c);});a.appendChild(wk);
+ a.appendChild(el('<div class="lbl">Day — tap to view</div>'));
+ ["A","B","C"].forEach(function(k){var b=el('<button class="btn sec">Day '+k+' — '+esc(PROGRAM[k].name.split("—")[1].trim())+'</button>');b.onclick=function(){previewDay=k;logScreen="preview";render();};a.appendChild(b);});
+ var last=DB.sessions[DB.sessions.length-1];
+ if(last)a.appendChild(el('<div class="mut" style="margin-top:14px">Last logged: '+esc(last.date)+' · Day '+last.day+' (W'+last.week+')</div>'));
+}
+function renderPreview(a,day){
+ var P=PROGRAM[day];
+ document.getElementById("hdrS").textContent="Day "+day+" · preview";
+ var back=el('<button class="btn ghost">‹ Back to days</button>');back.onclick=function(){logScreen="pick";previewDay=null;render();};a.appendChild(back);
+ a.appendChild(el('<h2 class="scr">'+esc(P.name)+'</h2>'));
+ a.appendChild(el('<div class="note">'+esc(WEEKTIP[sel.week]||"")+'</div>'));
+ if(DB.draft&&DB.draft.day===day){var rz=el('<button class="btn gold">▶ Resume logging this day</button>');rz.onclick=function(){logScreen=null;render();};a.appendChild(rz);}
+ else{var st=el('<button class="btn">▶ Start logging Day '+day+' (Week '+sel.week+')</button>');st.onclick=function(){if(DB.draft&&DB.draft.day!==day){if(!confirm("You have Day "+DB.draft.day+" in progress. Starting Day "+day+" will replace it. Continue?"))return;}startSession(day,sel.week);};a.appendChild(st);}
+ var curSec="";
+ P.items.forEach(function(it){
+  if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
+  var card=el('<div class="card"></div>');
+  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
+  card.appendChild(el('<div class="tgt">'+esc(it.tg)+'</div>'));
+  if(it.v)card.appendChild(el('<div class="meta">\u25B6 <a href="'+it.v+'" target="_blank" rel="noopener">Watch demo</a></div>'));
+  var lf=lastFor(it.id);
+  if(lf){var parts=lf.e.sets.filter(function(s){return s.w||s.r||s.min;}).map(function(s){return s.min?(s.min+"min"):((s.w?s.w+"×":"")+(s.r||"?")+(s.rir!==""&&s.rir!=null?"@"+s.rir:""));});card.appendChild(el('<div class="meta">Last ('+esc(lf.sess.date)+'): <b>'+esc(parts.join(", "))+'</b></div>'));}
+  else card.appendChild(el('<div class="meta">Last: <b>—</b></div>'));
+  a.appendChild(card);
+ });
+ var back2=el('<button class="btn ghost">‹ Back to days</button>');back2.onclick=function(){logScreen="pick";previewDay=null;render();};a.appendChild(back2);
+}
+function renderSession(a,d){
  document.getElementById("hdrS").textContent="Day "+d.day+" · Week "+d.week+" · "+d.date;
+ var back=el('<button class="btn ghost">‹ Days (keeps my progress)</button>');back.onclick=function(){logScreen="pick";render();};a.appendChild(back);
  a.appendChild(el('<h2 class="scr">'+esc(PROGRAM[d.day].name)+'</h2>'));
  a.appendChild(el('<div class="note">'+esc(WEEKTIP[d.week])+'</div>'));
  var curSec="";
- PROGRAM[d.day].items.forEach(function(it){
-  if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
-  a.appendChild(exCard(it));
- });
+ PROGRAM[d.day].items.forEach(function(it){if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}a.appendChild(exCard(it));});
  var nt=el('<div class="card"><div class="exn">Session notes</div><textarea id="snote" rows="3" placeholder="Energy, joints, anything worth flagging...">'+esc(d.note||"")+'</textarea></div>');
  nt.querySelector("textarea").addEventListener("input",function(e){DB.draft.note=e.target.value;save();});
  a.appendChild(nt);
  var fin=el('<button class="btn gold">Finish & save workout</button>');fin.onclick=finish;a.appendChild(fin);
- var disc=el('<button class="btn ghost">Discard this workout</button>');disc.onclick=function(){if(confirm("Discard this unsaved workout?")){DB.draft=null;save();render();}};a.appendChild(disc);
+ var disc=el('<button class="btn ghost">Discard this workout</button>');disc.onclick=function(){if(confirm("Discard this unsaved workout?")){DB.draft=null;logScreen=null;save();render();}};a.appendChild(disc);
 }
 function exCard(it){
  var d=DB.draft;var ent=d.entries[it.id]||(d.entries[it.id]={sets:[]});
@@ -216,7 +241,7 @@ function exCard(it){
  updEst();
  return card;
 }
-function startSession(day,week){DB.draft={date:today(),day:day,week:week,entries:{},note:""};save();render();}
+function startSession(day,week){DB.draft={date:today(),day:day,week:week,entries:{},note:""};logScreen=null;previewDay=null;save();render();}
 function finish(){
  var d=DB.draft;if(!d)return;
  var any=Object.keys(d.entries).some(function(k){var e=d.entries[k];return e.done||e.txt||(e.sets&&e.sets.some(function(s){return s.w||s.r||s.min;}));});
