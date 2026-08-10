@@ -117,7 +117,7 @@ var LOADK=["load","loadh"];
 var BLOCK="Block 2";
 var NWEEKS=5;
 var WEEKTIP={
- 1:"W1 — re-entry ~80%. Take the jump tests, the trunk hold and the CoD test. Log every mobility and agility item once.",
+ 1:"W1 — re-entry ~80%, NO beach tennis. MON: Zone 2 45 min. TUE: footwork 10 min + Zone 2 30 min. WED: agility circuit + CoD test + Zone 2 30 min — all three live under Cardio / Agility / Tennis. THU: Day A + jump tests. FRI: Day B. SAT: Day C + trunk hold.",
  2:"W2 — first real working loads. Repeats start. Sand primer before tennis.",
  3:"W3 — load climbs. Loaded core enters. Reactive element on Day C agility.",
  4:"W4 — peak week. Top loads, lowest RIR. Agility ~85–90%, never max.",
@@ -178,11 +178,11 @@ var PROGRAM={
   {s:"Recovery",q:"cool down spin after training why",id:"t_cool",n:"Cool-down spin",f:["min","done"],sets:1,tg:"5 min minimum",cue:"Never stop a hard effort dead. Standing cardiology rule — applies to tennis too."}
  ]},
 
- X:{name:"Tennis / Cardio / Testing",short:"Tennis, cardio, tests",items:[
+ X:{name:"Cardio / Agility / Tennis",short:"Zone 2, agility, tennis, tests",items:[
   {s:"Sport",q:"beach tennis footwork and movement",id:"x_tennis",n:"Beach tennis",f:["min","hr"],sets:1,tg:"~90 min · Mon & Wed 6:30pm",cue:"Log duration and average HR from WHOOP. If light-headedness happens, tick the box at the bottom of this session — that is real data the board needs."},
   {s:"Sport",q:"tennis footwork warm up drills before match",id:"x_primer",n:"Pre-tennis sand primer (from W2)",f:["done"],tg:"5 min · before the match",cue:"6 × drop-step and run 4 m each side · 4 × lateral shuffle 6 m each way · 4 × backpedal-plant-forward. TECHNIQUE SPEED ONLY — you are at peak clonazepam. Your only sand exposure for the pattern."},
   {s:"Aerobic",q:"zone 2 stationary bike session",id:"x_z2",n:"Zone 2 session (bike / walk)",f:["min","hr"],sets:1,tg:"Week 1 Mon 45 min · Wed 30 min",cue:"LOG MINUTES AND AVERAGE HR. Cool room, fan on. Electrolyte packet if you sweat hard. Five-minute spin-down."},
-  {s:"Skill",q:"change of direction agility drills for sport",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"x_agil",n:"Standalone agility session",f:["rounds","done"],sets:1,tg:"Week 1 Wed · 3 rounds",cue:"The Day C pattern circuit run on its own. Gym floor or hard court. Morning or early afternoon — never 6:30pm."},
+  {s:"Skill",q:"change of direction agility drills for sport",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"x_agil",n:"Standalone agility session",f:["rounds","done"],sets:1,tg:"Week 1 Wed · 3 rounds",cue:"WARM UP 6–8 min: easy bike or jog, ankle rockers, leg swings, 3 × 20m build-ups. THEN 3 ROUNDS OF — backpedal 5m → drop-step → sprint 5m, ×4 alternating sides · lateral shuffle 8m, ×2 each way · crossover step 6m, ×2 each way · carioca 8m, ×2 each way. Walk between rounds. TECHNIQUE SPEED ~60–70% — if you are breathing hard you are doing it wrong. Gym floor or hard court, NOT sand. Morning or early afternoon, NEVER 6:30pm. Log the rounds, then 30 min Zone 2 on the bike."},
   {s:"Test",q:"backpedal drop step sprint change of direction test",id:"x_cod",n:"CoD test — 5m backpedal → drop-step → 5m sprint",f:["sec"],sets:3,tg:"W1 & W5 · best of 3",cue:"Two lines 5 m apart. Log all three attempts in seconds with decimals (e.g. 4.2). Hand timing is ±0.2 s, so only a change over 0.3 s means anything."},
   {s:"Other",id:"x_steps",n:"Daily steps",f:["reps"],sets:1,tg:"8,000–10,000 / day",cue:"Log the day's step count in the Reps box. Free Zone 1 volume and the correct soleus stimulus. Easiest to miss on non-training days."}
  ]}
