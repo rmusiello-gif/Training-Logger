@@ -8,11 +8,11 @@
 <meta name="theme-color" content="#1F3864">
 <title>Athletic Aging — Logger</title>
 <style>
-:root{--navy:#1F3864;--blue:#2E75B6;--bg:#0f141b;--card:#1a212c;--card2:#222b39;--line:#2f3a4a;--txt:#e8edf4;--mut:#93a1b3;--gold:#e0a800;--good:#3ea76a;}
+:root{--navy:#1F3864;--blue:#2E75B6;--bg:#0f141b;--card:#1a212c;--card2:#222b39;--line:#2f3a4a;--txt:#e8edf4;--mut:#93a1b3;--gold:#e0a800;--good:#3ea76a;--bad:#e05a4a;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;}
 body{padding-bottom:90px;}
-header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1F3864,#16223a);padding:14px 16px calc(12px + env(safe-area-inset-top,0)) 16px;padding-top:calc(14px + env(safe-area-inset-top,0));box-shadow:0 2px 10px rgba(0,0,0,.4);}
+header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1F3864,#16223a);padding:14px 16px 12px;padding-top:calc(14px + env(safe-area-inset-top,0));box-shadow:0 2px 10px rgba(0,0,0,.4);}
 header .t{font-size:19px;font-weight:800;letter-spacing:.2px;}
 header .s{font-size:12px;color:#b9c6da;margin-top:2px;}
 .wrap{padding:14px 14px 20px;max-width:640px;margin:0 auto;}
@@ -20,25 +20,27 @@ header .s{font-size:12px;color:#b9c6da;margin-top:2px;}
 .btn.sec{background:var(--card2);border:1px solid var(--line);}
 .btn.gold{background:var(--gold);color:#20180a;}
 .btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt);}
-.row{display:flex;gap:10px;}
-.row .btn{margin:6px 0;}
+.btn.sm{padding:11px;font-size:14px;}
 .pick{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 4px;}
-.chip{flex:1;min-width:64px;text-align:center;padding:14px 8px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:15px;color:var(--txt);cursor:pointer;}
+.chip{flex:1;min-width:56px;text-align:center;padding:14px 6px;border-radius:12px;background:var(--card);border:1px solid var(--line);font-weight:700;font-size:15px;color:var(--txt);cursor:pointer;}
 .chip.on{background:var(--blue);border-color:var(--blue);}
 .lbl{font-size:12px;color:var(--mut);text-transform:uppercase;letter-spacing:.6px;margin:16px 2px 4px;}
 .sec-h{font-size:12px;font-weight:800;color:var(--gold);text-transform:uppercase;letter-spacing:1px;margin:18px 4px 6px;}
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;margin:10px 0;}
 .exn{font-size:16px;font-weight:800;}
 .tgt{font-size:12.5px;color:var(--blue);font-weight:700;margin-top:2px;}
+.cue{font-size:12.5px;color:#c3cfdd;margin-top:8px;line-height:1.6;background:#141b25;border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:9px;padding:10px 11px;}
+.tools{display:flex;gap:7px;margin-top:9px;}
+.tool{flex:1;text-align:center;font-size:12px;font-weight:700;padding:9px 6px;border-radius:9px;background:var(--card2);border:1px solid var(--line);color:var(--txt);text-decoration:none;cursor:pointer;display:block;}
+.tool.on{background:var(--blue);border-color:var(--blue);color:#fff;}
 .meta{font-size:12px;color:var(--mut);margin-top:5px;line-height:1.5;}
 .meta b{color:var(--txt);}
 .setrow{display:flex;align-items:center;gap:7px;margin-top:8px;}
 .setrow .n{width:20px;color:var(--mut);font-size:13px;font-weight:700;text-align:center;}
-.setrow input{flex:1;min-width:0;background:#0e141d;border:1px solid var(--line);border-radius:10px;color:#fff;font-size:16px;padding:11px 8px;text-align:center;-moz-appearance:textfield;}
+.setrow input{flex:1;min-width:0;background:#0e141d;border:1px solid var(--line);border-radius:10px;color:#fff;font-size:16px;padding:11px 6px;text-align:center;-moz-appearance:textfield;}
 .setrow input::-webkit-outer-spin-button,.setrow input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
-.setrow .cap{font-size:10px;color:var(--mut);text-align:center;}
-.caps{display:flex;gap:7px;margin:2px 0 0 27px;}
-.caps span{flex:1;text-align:center;font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;}
+.caps{display:flex;gap:7px;margin:6px 0 0 27px;}
+.caps span{flex:1;text-align:center;font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;}
 .addset{background:transparent;border:1px dashed var(--line);color:var(--mut);border-radius:10px;padding:8px;width:100%;margin-top:8px;font-size:13px;cursor:pointer;}
 .done{display:flex;align-items:center;gap:10px;margin-top:8px;}
 .done input{width:26px;height:26px;}
@@ -48,22 +50,25 @@ textarea{width:100%;background:#0e141d;border:1px solid var(--line);border-radiu
 .tabbar button{flex:1;background:none;border:0;color:var(--mut);font-size:11px;padding:10px 4px;font-weight:700;cursor:pointer;}
 .tabbar button.on{color:var(--blue);}
 .tabbar .ic{font-size:19px;display:block;}
-.hist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;}
+.hist{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px;margin:8px 0;cursor:pointer;}
+.hist.open{border-color:var(--gold);}
 .hist .d{font-weight:800;}
 .hist .m{font-size:12px;color:var(--mut);margin-top:3px;}
+.badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--gold);color:#20180a;margin-left:6px;vertical-align:1px;}
 .timerbar{position:fixed;left:0;right:0;bottom:64px;background:#141c28;border-top:1px solid var(--line);padding:8px 12px;display:none;align-items:center;gap:10px;z-index:25;}
 .timerbar.on{display:flex;}
 .timerbar .tm{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;min-width:64px;}
 .timerbar button{background:var(--card2);border:1px solid var(--line);color:#fff;border-radius:9px;padding:8px 12px;font-weight:700;font-size:13px;}
 .note{font-size:12px;color:var(--mut);background:rgba(224,168,0,.08);border:1px solid rgba(224,168,0,.35);border-radius:10px;padding:10px;margin:10px 0;line-height:1.5;}
-.hidden{display:none!important;}
+.warn{font-size:12.5px;color:#ffd9d3;background:rgba(224,90,74,.12);border:1px solid rgba(224,90,74,.5);border-radius:10px;padding:10px;margin:10px 0;line-height:1.5;}
+.ok{font-size:12px;color:#cfe9da;background:rgba(62,167,106,.10);border:1px solid rgba(62,167,106,.4);border-radius:10px;padding:10px;margin:10px 0;line-height:1.5;}
 h2.scr{font-size:20px;margin:6px 2px 2px;}
 .mut{color:var(--mut);font-size:13px;line-height:1.55;}
-a{color:var(--blue);}
+.savedot{font-size:11px;color:var(--good);margin-top:3px;}
 </style>
 </head>
 <body>
-<header><div class="t" id="hdrT">Athletic Aging — Logger</div><div class="s" id="hdrS">Block 1 · tap Log to begin</div></header>
+<header><div class="t" id="hdrT">Athletic Aging — Logger</div><div class="s" id="hdrS">Block 2 · tap Log to begin</div><div class="savedot" id="saveDot"></div></header>
 <div class="wrap" id="app"></div>
 
 <div class="timerbar" id="tbar"><div class="tm" id="tm">2:00</div><button onclick="tAdj(-15)">−15</button><button onclick="tAdj(15)">+15</button><button onclick="tToggle()" id="tBtn">Start</button><button onclick="tHide()">✕</button></div>
@@ -71,298 +76,607 @@ a{color:var(--blue);}
 <div class="tabbar">
 <button id="tab-log" class="on" onclick="go('log')"><span class="ic">➕</span>Log</button>
 <button id="tab-hist" onclick="go('hist')"><span class="ic">📖</span>History</button>
-<button id="tab-data" onclick="go('data')"><span class="ic">📤</span>Export</button>
-<button id="tab-elbow" onclick="go('elbow')"><span class="ic">🩹</span>Elbow</button>
+<button id="tab-data" onclick="go('data')"><span class="ic">📤</span>Send</button>
 <button id="tab-info" onclick="go('info')"><span class="ic">ℹ️</span>Guide</button>
 </div>
 
 <script>
 "use strict";
-/* ---------- PROGRAM ---------- */
-// type: w=weight/reps/RIR, r=reps/RIR, t=minutes, x=done+note
+
+/* =========================================================
+   FIELD TYPES — every input is explicitly declared per exercise.
+   No exercise ever gets a box that does not belong to it.
+   ========================================================= */
+var FT={
+ load  :{cap:"Load lb",   ph:"lb"},
+ loadh :{cap:"Load /hand",ph:"lb/hand"},
+ assist:{cap:"Assist lb", ph:"assist"},
+ ball  :{cap:"Ball lb",   ph:"ball"},
+ pin   :{cap:"Stack/pin", ph:"pin"},
+ reps  :{cap:"Reps",      ph:"reps"},
+ rside :{cap:"Reps /side",ph:"/side"},
+ rleg  :{cap:"Reps /leg", ph:"/leg"},
+ rir   :{cap:"RIR",       ph:"rir"},
+ distm :{cap:"Distance m",ph:"metres"},
+ distin:{cap:"Distance in",ph:"inches"},
+ hgtin :{cap:"Height in", ph:"inches"},
+ sec   :{cap:"Seconds",   ph:"sec"},
+ min   :{cap:"Minutes",   ph:"min"},
+ hr    :{cap:"Avg HR",    ph:"bpm"},
+ rpe   :{cap:"RPE",       ph:"rpe"},
+ rounds:{cap:"Rounds",    ph:"rounds"},
+ ivals :{cap:"Intervals", ph:"how many"}
+};
+/* field keys that mean "a load" for est-1RM purposes */
+var LOADK=["load","loadh"];
+
+/* =========================================================
+   PROGRAM — Block 2 v2.2
+   f: array of field keys. wk: load hint per week [W1..W5].
+   ========================================================= */
+var BLOCK="Block 2";
+var NWEEKS=5;
+var WEEKTIP={
+ 1:"W1 — re-entry ~80%. Take the jump tests, the trunk hold and the CoD test. Log every mobility and agility item once.",
+ 2:"W2 — first real working loads. Repeats start. Sand primer before tennis.",
+ 3:"W3 — load climbs. Loaded core enters. Reactive element on Day C agility.",
+ 4:"W4 — peak week. Top loads, lowest RIR. Agility ~85–90%, never max.",
+ 5:"W5 — deload ~60–65%, about half the sets. Retest jumps + CoD. Eat at maintenance."
+};
+var LOADRULE="LOAD RULE — beat the top of the rep range by 2+ → add ~5% next time. Miss the bottom by 2+ → drop ~10%. Inside the range at target RIR → repeat the load. The rep range is the instruction; the load is what you move.";
+
 var PROGRAM={
- A:{name:"Day A — Lower: Power + Squat",items:[
-  {s:"Power",id:"a_tbjump",n:"Trap-bar jump",t:"wr",sets:4,tg:"4 × 3 · light load · max speed",v:"https://www.youtube.com/watch?v=rZGkx5PaZSM"},
-  {s:"Power",id:"a_broad",n:"Broad jump",t:"r",sets:3,tg:"3 × 3 · bodyweight",v:"https://www.youtube.com/watch?v=q7851uL2M8c"},
-  {s:"Strength",id:"a_fsq",n:"Front squat (cross-arm grip)",t:"w",sets:4,tg:"4 × 4–5 · ~125 lb · 1–2 RIR · cross-arm grip",v:"https://www.youtube.com/watch?v=rSdoklU2xwU"},
-  {s:"Strength",id:"a_bss",n:"Bulgarian split squat (DB)",t:"w",sets:3,tg:"3 × 6–8 / leg · 2 RIR",v:"https://www.youtube.com/watch?v=hiLF_pF3EJM"},
-  {s:"Hypertrophy",id:"a_ham",n:"Leg curl (machine)",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=P7-RxTVe6O0"},
-  {s:"Hypertrophy",id:"a_lp",n:"Leg press or hack squat",t:"w",sets:2,tg:"2 × 12–15 · 1–2 RIR",v:"https://www.youtube.com/watch?v=K5n2vg3oZa4"},
-  {s:"Hypertrophy",id:"a_scr",n:"Seated (bent-knee) calf raise",t:"w",sets:3,tg:"3 × 12–15 · soleus",v:"https://www.youtube.com/watch?v=ORY-ke6vcgk"},
-  {s:"Core + Mobility",id:"a_pallof",n:"Dead bug (anti-rotation core)",t:"r",sets:2,tg:"2 × 8–10 / side · slow",v:"https://www.youtube.com/watch?v=3eqodmkpkfA"},
-  {s:"Core + Mobility",id:"a_mob",n:"Ankle + hip finisher",t:"x",tg:"5 min"}
+ A:{name:"Day A — Lower: Power + Squat",short:"Lower: power + squat",items:[
+  {s:"Prep",q:"ankle knee to wall and 90/90 hip mobility warm up",id:"a_prep",n:"Warm-up + ankle & hip mobility",f:["done"],tg:"10 min",cue:"Bike 3–4 min, ankle knee-to-wall 10/side, 90/90 hip switches, couch stretch 30s/side, deep squat hold, leg swings, 2 bodyweight squat sets."},
+  {s:"Power / Test",q:"trap bar jump squat technique",v:"https://www.youtube.com/watch?v=rZGkx5PaZSM",id:"a_tbjump",n:"Trap-bar jump",f:["load","reps"],sets:4,tg:"4 × 3 · {L} lb",wk:[85,95,95,100,80],cue:"Explode, reset every rep. Stop the set the moment speed drops. No RIR here — never grind a jump."},
+  {s:"Power / Test",q:"standing broad jump test how to measure",v:"https://www.youtube.com/watch?v=q7851uL2M8c",id:"a_broad",n:"Broad jump",f:["distin","reps"],sets:3,tg:"W1 & W5 TEST · then 3 × 3",cue:"Test weeks: fully warmed up, 3 max attempts, measure heel-to-heel, log the BEST distance. Other weeks: log distance of the best jump in each set, submaximal."},
+  {s:"Power / Test",q:"countermovement vertical jump test how to measure",id:"a_vert",n:"Vertical jump (test only)",f:["hgtin"],sets:1,tg:"W1 & W5 only · 3 attempts",cue:"Countermovement jump. Reach minus standing reach, or any gym app. Log the best of three. Skip in weeks 2–4."},
+  {s:"Power / Test",q:"lateral bound and stick landing deceleration drill",id:"a_decel",n:"Deceleration & landing block",f:["rounds","done"],sets:1,tg:"6–8 min",cue:"Snapdown to stick 3×4. Lateral bound to stick 3×3/side, land and hold 2 sec. Backward-to-forward transition 3×4. STOP when landings get loud."},
+  {s:"Strength",q:"front squat technique cross arm grip",v:"https://www.youtube.com/watch?v=rSdoklU2xwU",id:"a_fsq",n:"Front squat",f:["load","reps","rir"],sets:4,tg:"4 × 5 (W4: 4 × 4) · {L} lb",wk:[120,140,147,152,105],cue:"Deep, chest tall, cross-arm grip. W1 4–5 RIR, W2–3 2 RIR, W4 1–2 RIR."},
+  {s:"Strength",q:"bulgarian split squat dumbbell proper form",v:"https://www.youtube.com/watch?v=hiLF_pF3EJM",id:"a_bss",n:"Bulgarian split squat (DB)",f:["loadh","rleg","rir"],sets:3,tg:"3 × 8 → 3 × 6 /leg · {L} lb/hand",wk:[40,45,50,50,35],cue:"THE BIG FIX — you did 14 reps at 35 lb against a 6–8 target. If you finish W3 with 3+ reps left, go to 55 in W4. Do not add reps."},
+  {s:"Hypertrophy",q:"seated leg curl proper form",v:"https://www.youtube.com/watch?v=P7-RxTVe6O0",id:"a_ham",n:"Leg curl",f:["load","reps","rir"],sets:3,tg:"3 × 10–12 · {L} lb",wk:[70,80,85,90,60],cue:"Your deceleration insurance on sand. Non-negotiable — it got skipped all last block. Loads are estimated; correct by feel."},
+  {s:"Hypertrophy",q:"leg press proper form technique",v:"https://www.youtube.com/watch?v=K5n2vg3oZa4",id:"a_lp",n:"Leg press",f:["load","reps","rir"],sets:3,tg:"3 × 10–12 · {L} lb",wk:[275,300,315,330,230],cue:"You were at 264 × 17 @ 1 RIR — far past the rep target. Load up, cap the reps at 12."},
+  {s:"Calves",q:"seated calf raise soleus technique",v:"https://www.youtube.com/watch?v=ORY-ke6vcgk",id:"a_scr",n:"Seated (bent-knee) calf raise",f:["load","reps","rir"],sets:3,tg:"3 × 12 (W4: 3 × 10) · {L} lb",wk:[130,140,150,160,120],cue:"Soleus — the anti-gravity muscle. 2-second pause at the bottom stretch, full range. Estimated loads."},
+  {s:"Core",q:"weighted dead bug exercise proper form",v:"https://www.youtube.com/watch?v=3eqodmkpkfA",id:"a_db",n:"Dead bug (weighted from W3)",f:["load","rside"],sets:3,tg:"3 × 8 /side · {L}",wk:["BW","BW",10,15,10],cue:"Bodyweight W1–W2, loaded from W3. Hold a DB or plate overhead, or cable stir-the-pot. EXHALE THROUGH EVERY REP — no breath holding."},
+  {s:"Core",q:"pallof press anti rotation proper technique",id:"a_pallof",n:"Pallof press · 3-sec pause",f:["pin","rside"],sets:3,tg:"3 × 10 /side · log the pin",cue:"Anti-rotation — the exact core quality tennis loads. Log the stack pin number so progression is a number, not a feeling."}
  ]},
- B:{name:"Day B — Upper: Push/Pull (shoulder-safe)",items:[
-  {s:"Power",id:"b_mb",n:"Med-ball chest pass (wall)",t:"r",sets:3,tg:"3 × 5 · 2-hand · no wrist snap",v:"https://www.youtube.com/watch?v=PhxzbdElDnM"},
-  {s:"Strength",id:"b_bench",n:"Neutral-grip DB bench press",t:"w",sets:4,tg:"4 × 5–6 · 1–2 RIR",v:"https://www.youtube.com/watch?v=315SmTiVJAU"},
-  {s:"Strength",id:"b_pull",n:"Assisted pull-up (log assist as load)",t:"w",sets:4,tg:"4 × 5–8 · ~60 lb assist",v:"https://www.youtube.com/watch?v=gx0RWT7WbmA"},
-  {s:"Push / Pull",id:"b_lm",n:"Landmine press (½-kneeling)",t:"w",sets:3,tg:"3 × 8–10 / side · 2 RIR",v:"https://www.youtube.com/watch?v=Yt3ZGWUE6v8"},
-  {s:"Push / Pull",id:"b_row",n:"Chest-supported DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=qiCgZq3GnVY"},
-  {s:"Hypertrophy + Arms",id:"b_inc",n:"Incline DB press",t:"w",sets:2,tg:"2 × 12 · 1–2 RIR",v:"https://www.youtube.com/watch?v=awEEyL5zGvU"},
-  {s:"Hypertrophy + Arms",id:"b_face",n:"Face pull (rear delts / cuff)",t:"w",sets:2,tg:"2 × 12–15 · elbows high",v:"https://www.youtube.com/watch?v=eQaSpG7aMYQ"},
-  {s:"Hypertrophy + Arms",id:"b_curl",n:"Hammer curl (neutral grip)",t:"w",sets:2,tg:"2 × 12–15 · neutral grip",v:"https://www.youtube.com/watch?v=8XLxfXROrTo"},
-  {s:"Hypertrophy + Arms",id:"b_tri",n:"Overhead DB triceps extension (neutral)",t:"w",sets:2,tg:"2 × 12–15 · neutral grip",v:"https://www.youtube.com/watch?v=v1qDINLCb8Q"},
-  {s:"Core + Mobility",id:"b_carry",n:"Suitcase carry",t:"w",sets:2,tg:"2 × 30 m / side · mod–heavy",v:"https://www.youtube.com/watch?v=T9A607GaR2w"},
-  {s:"Core + Mobility",id:"b_mob",n:"T-spine + shoulder finisher",t:"x",tg:"5 min"}
+
+ B:{name:"Day B — Upper: Push / Pull (shoulder-safe)",short:"Upper: push / pull",items:[
+  {s:"Prep",q:"shoulder CARs band pull apart scapular warm up",id:"b_prep",n:"Shoulder prep + T-spine & lat mobility",f:["done"],tg:"10 min",cue:"Shoulder CARs, band pull-aparts, scap work. THEN the screen work: bench lat stretch 3×30s, foam-roller T-spine extension 8–10, doorway pec stretch 2×30s/side, prone Y-raise 2×10."},
+  {s:"Power",q:"rotational medicine ball throw against wall technique",id:"b_mb",n:"Rotational med-ball throw (wall)",f:["ball","rside"],sets:3,tg:"3 × 4 /side · light ball, max intent",cue:"Fast hips, not arm. The one power movement that transfers straight to your tennis swing."},
+  {s:"Strength",q:"neutral grip dumbbell bench press form",v:"https://www.youtube.com/watch?v=315SmTiVJAU",id:"b_bench",n:"Neutral-grip DB bench press",f:["loadh","reps","rir"],sets:4,tg:"4 × 6 (W3–4: 4 × 5) · {L} lb/hand",wk:[80,85,90,95,75],cue:"ESTIMATED — no Day B data since 12 Jul. Expect W1 to feel easy; if you beat the top of the range by 2+, jump 5–10%, not 5%."},
+  {s:"Strength",q:"assisted pull up machine proper form",v:"https://www.youtube.com/watch?v=gx0RWT7WbmA",id:"b_pull",n:"Assisted pull-up",f:["assist","reps","rir"],sets:4,tg:"4 × 6 → 4 × 5 · {L} lb assist",wk:[60,55,50,45,60],cue:"Log the ASSIST weight, not your bodyweight. Assistance comes down every week — that is the progression. Target: first unassisted rep by end of Block 3."},
+  {s:"Push / Pull",q:"half kneeling landmine press technique",v:"https://www.youtube.com/watch?v=Yt3ZGWUE6v8",id:"b_lm",n:"Landmine press (½-kneeling)",f:["load","rside","rir"],sets:3,tg:"3 × 10 (W3–4: 3 × 8) /side · {L} lb",wk:[70,80,90,95,65],cue:"Your overhead substitute. Angled path is labrum-safe. Ribs down, never press straight overhead."},
+  {s:"Push / Pull",q:"chest supported dumbbell row proper form",v:"https://www.youtube.com/watch?v=qiCgZq3GnVY",id:"b_row",n:"Chest-supported DB row",f:["loadh","reps","rir"],sets:3,tg:"3 × 10 · {L} lb/hand",wk:[60,65,70,75,55],cue:"Drive the elbows up and back, pull with the back not the hand."},
+  {s:"Hypertrophy",q:"incline dumbbell press proper form",v:"https://www.youtube.com/watch?v=awEEyL5zGvU",id:"b_inc",n:"Incline DB press",f:["loadh","reps","rir"],sets:2,tg:"2 × 12 · {L} lb/hand",wk:[35,40,45,45,30],cue:"Upper-chest volume. Estimated loads."},
+  {s:"Shoulder",q:"face pull proper form and technique rope",v:"https://www.youtube.com/watch?v=eQaSpG7aMYQ",id:"b_face",n:"Face pull",f:["load","reps","rir"],sets:3,tg:"3 × 15 · {L} lb",wk:[60,65,70,70,60],cue:"Best shoulder-health insurance you have for the labrum. Elbows high, thumbs back, light relaxed grip."},
+  {s:"Arms",q:"hammer curl proper form",v:"https://www.youtube.com/watch?v=8XLxfXROrTo",id:"b_hammer",n:"Hammer curl (neutral)",f:["loadh","reps","rir"],sets:2,tg:"2 × 12 · {L} lb/hand",wk:[35,40,40,45,30],cue:"Neutral grip is the default. Estimated loads."},
+  {s:"Arms",q:"overhead dumbbell triceps extension proper form",v:"https://www.youtube.com/watch?v=v1qDINLCb8Q",id:"b_ohtri",n:"Overhead DB triceps extension",f:["load","reps","rir"],sets:2,tg:"2 × 12 · {L} lb",wk:[30,35,35,40,25],cue:"You were at 25 × 15 @ 6 RIR — barely training. Take these to 1–2 RIR."},
+  {s:"Carry / Core",q:"suitcase carry loaded carry technique",v:"https://www.youtube.com/watch?v=T9A607GaR2w",id:"b_carry",n:"Suitcase carry",f:["loadh","distm"],sets:2,tg:"2 × 30 m /side · {L} lb/hand",wk:[50,55,60,65,50],cue:"LOG LOAD AND DISTANCE — there are no reps here. One dumbbell, one side at a time, walk tall. Maps straight to the Decathlon target of carrying your own luggage."},
+  {s:"Carry / Core",q:"weighted side plank proper form",v:"https://www.youtube.com/watch?v=iNbH7_edNI8",id:"b_sp",n:"Side plank (weighted from W3)",f:["load","sec"],sets:2,tg:"2 × 30–45 s /side · {L}",wk:["BW","BW",10,15,"BW"],cue:"LOG LOAD AND SECONDS — no reps. Plate on the hip from W3. Anti-lateral-flexion under load. Breathe through it."}
  ]},
- C:{name:"Day C — Total Body + Hinge + Aerobic",items:[
-  {s:"Agility + Power",id:"c_agil",n:"Agility: backpedal / lateral / carioca",t:"x",tg:"3 rounds · submaximal (AM)",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw"},
-  {s:"Agility + Power",id:"c_pogo",n:"Pogo hops",t:"r",sets:3,tg:"3 × 15–20 · gastroc",v:"https://www.youtube.com/watch?v=j0nl5dWuqN4"},
-  {s:"Strength",id:"c_tbdl",n:"Trap-bar deadlift",t:"w",sets:4,tg:"4 × 4–5 · ~230 lb · 1–2 RIR",v:"https://www.youtube.com/watch?v=tpUKFfIFG24"},
-  {s:"Strength",id:"c_lunge",n:"DB reverse lunge (or step-up)",t:"w",sets:3,tg:"3 × 8–10 / leg · 2 RIR",v:"https://www.youtube.com/watch?v=Q2k3kYbtOcI"},
-  {s:"Push / Pull + Calves",id:"c_push",n:"DB floor press (neutral grip)",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=AqYFvc9t_vU"},
-  {s:"Push / Pull + Calves",id:"c_row",n:"Single-arm DB row",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=tLnlWj7LQ34"},
-  {s:"Push / Pull + Calves",id:"c_calf",n:"Standing calf raise",t:"w",sets:3,tg:"3 × 10–12 · 2 RIR",v:"https://www.youtube.com/watch?v=97NbelB5yvQ"},
-  {s:"Core + Aerobic",id:"c_db",n:"Dead bug",t:"r",sets:2,tg:"2 × 8–10 / side",v:"https://www.youtube.com/watch?v=3eqodmkpkfA"},
-  {s:"Core + Aerobic",id:"c_sp",n:"Side plank",t:"t",tg:"2 × 30–45 s / side",v:"https://www.youtube.com/watch?v=iNbH7_edNI8"},
-  {s:"Core + Aerobic",id:"c_z2",n:"Zone 2 finisher (bike/walk)",t:"t",tg:"25–30 min · conversational"}
+
+ C:{name:"Day C — Total Body + Hinge + Aerobic",short:"Total body + hinge",items:[
+  {s:"Prep / Agility",q:"dynamic full body warm up before lifting",id:"c_prep",n:"Full-body warm-up",f:["done"],tg:"8 min",cue:"Easy bike or row, then dynamic hips, ankles, shoulders."},
+  {s:"Prep / Agility",q:"drop step crossover backpedal agility footwork drill",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"c_agil",n:"Agility pattern circuit",f:["rounds","done"],sets:1,tg:"3 rounds · 12–15 min · morning",cue:"Backpedal 5m → drop-step → sprint 5m ×4 · lateral shuffle 8m ×2 each way · crossover 6m ×2 each way · carioca 8m ×2 each way. W3–4: make 4 drop-step reps random-direction. NEVER at 6:30pm."},
+  {s:"Prep / Agility",q:"pogo hops technique ankle stiffness",v:"https://www.youtube.com/watch?v=j0nl5dWuqN4",id:"c_pogo",n:"Pogo hops / jump rope",f:["reps"],sets:3,tg:"3 × 20 · bodyweight",cue:"Bodyweight — REPS ONLY, no load, no RIR. Land tall, quiet, springy. Gastrocnemius and Achilles stiffness."},
+  {s:"Strength",q:"trap bar deadlift technique",v:"https://www.youtube.com/watch?v=tpUKFfIFG24",id:"c_tbdl",n:"Trap-bar deadlift",f:["load","reps","rir"],sets:4,tg:"4 × 5 (W4: 4 × 4) · {L} lb",wk:[200,250,260,265,185],cue:"Your best mover last block (+20 lb at a harder RIR). Flat back, stand tall, control the lower. Straps on the top sets."},
+  {s:"Strength",q:"dumbbell reverse lunge proper form",v:"https://www.youtube.com/watch?v=Q2k3kYbtOcI",id:"c_lunge",n:"DB reverse lunge / step-up",f:["loadh","rleg","rir"],sets:3,tg:"3 × 10 (W3–4: 3 × 8) /leg · {L} lb/hand",wk:[45,50,55,55,40],cue:"You were at 44 × 10 with 5 reps in reserve when 2 were asked for. Second single-leg pattern, different from the Bulgarian on purpose."},
+  {s:"Push / Pull",q:"dumbbell floor press neutral grip form",v:"https://www.youtube.com/watch?v=AqYFvc9t_vU",id:"c_push",n:"DB floor press (neutral)",f:["loadh","reps","rir"],sets:3,tg:"3 × 10 · {L} lb/hand",wk:[75,80,85,90,65],cue:"Also at 5 RIR last block. Real load now."},
+  {s:"Push / Pull",q:"single arm dumbbell row proper form",v:"https://www.youtube.com/watch?v=tLnlWj7LQ34",id:"c_row",n:"Single-arm DB row",f:["loadh","rside","rir"],sets:3,tg:"3 × 10–11 /side · {L} lb",wk:[70,75,80,85,65],cue:"DELIBERATE LOAD DROP from your 90 × 6. At 6 reps you were training strength on a hypertrophy exercise. Lighter, full range, better stimulus."},
+  {s:"Calves",q:"standing calf raise proper form",v:"https://www.youtube.com/watch?v=97NbelB5yvQ",id:"c_calf",n:"Standing calf raise",f:["load","reps","rir"],sets:3,tg:"3 × 12 (W3–4: 3 × 10) · {L} lb",wk:[180,190,200,205,160],cue:"Gastrocnemius, to complement the pogos. You were at 170 × 18 — reps climbing, load static. Fixed."},
+  {s:"Core / Test",q:"weighted dead bug exercise proper form",v:"https://www.youtube.com/watch?v=3eqodmkpkfA",id:"c_db",n:"Dead bug (weighted from W3)",f:["load","rside"],sets:3,tg:"3 × 8 /side · {L}",wk:["BW","BW",10,15,10],cue:"Same as Day A. Exhale through every rep."},
+  {s:"Core / Test",q:"weighted side plank proper form",v:"https://www.youtube.com/watch?v=iNbH7_edNI8",id:"c_sp",n:"Side plank (weighted from W3)",f:["load","sec"],sets:2,tg:"2 × 45 s /side · {L}",wk:["BW","BW",10,15,"BW"],cue:"Load and seconds — no reps."},
+  {s:"Core / Test",q:"biering sorensen test trunk extensor endurance",id:"c_bs",n:"Biering-Sørensen hold (test)",f:["sec"],sets:1,tg:"W1 & W5 only · target 200 s+",cue:"Prone on a bench, hips fixed, torso unsupported and horizontal. Hold to failure, ONCE. Skip in weeks 2–4."},
+  {s:"Aerobic",q:"zone 2 training how it should feel nose breathing",id:"c_z2",n:"Zone 2 finisher (bike)",f:["min","hr"],sets:1,tg:"30 min (W5: 25) · 112–125 bpm",cue:"LOG MINUTES AND AVERAGE HR. Nose-breathing, conversational. Zone 2 is a ceiling, not a target — aim 115–125."}
+ ]},
+
+ T:{name:"Tuesday — Footwork + Zone 2",short:"Footwork + Zone 2",items:[
+  {s:"Skill",q:"drop step and crossover footwork drill tennis",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"t_foot",n:"Footwork skill block",f:["rounds","done"],sets:1,tg:"10 min · technique speed",cue:"Drop-step and run 6/side · crossover 6/side · lateral shuffle 4×8m each way · backpedal-plant-forward 4× · carioca 4×8m each way. ~60–70% speed. If you are breathing hard you are doing it wrong. Morning, un-sedated."},
+  {s:"Aerobic",q:"zone 2 cycling indoor how it should feel",id:"t_z2",n:"Zone 2 bike",f:["min","hr"],sets:1,tg:"W1 35 · W2–3 40 · W4 45 · W5 30 min",cue:"LOG MINUTES AND AVERAGE HR. 112–131 is the band; aim 115–125. Nose-breathing and full sentences."},
+  {s:"Aerobic",q:"sub maximal intervals cycling repeats RPE",id:"t_rep",n:"Sub-maximal Repeats (from W2)",f:["ivals","sec","rpe"],sets:1,tg:"W2 6 · W3 8 · W4 10 × 45 sec @ RPE 6–7",cue:"Log HOW MANY intervals, the length of each in seconds, and your RPE. ~140–150 bpm. 2–3 min easy spinning between. At the END of the session. None in W1 or W5."},
+  {s:"Recovery",q:"cool down spin after training why",id:"t_cool",n:"Cool-down spin",f:["min","done"],sets:1,tg:"5 min minimum",cue:"Never stop a hard effort dead. Standing cardiology rule — applies to tennis too."}
+ ]},
+
+ X:{name:"Tennis / Cardio / Testing",short:"Tennis, cardio, tests",items:[
+  {s:"Sport",q:"beach tennis footwork and movement",id:"x_tennis",n:"Beach tennis",f:["min","hr"],sets:1,tg:"~90 min · Mon & Wed 6:30pm",cue:"Log duration and average HR from WHOOP. If light-headedness happens, tick the box at the bottom of this session — that is real data the board needs."},
+  {s:"Sport",q:"tennis footwork warm up drills before match",id:"x_primer",n:"Pre-tennis sand primer (from W2)",f:["done"],tg:"5 min · before the match",cue:"6 × drop-step and run 4 m each side · 4 × lateral shuffle 6 m each way · 4 × backpedal-plant-forward. TECHNIQUE SPEED ONLY — you are at peak clonazepam. Your only sand exposure for the pattern."},
+  {s:"Aerobic",q:"zone 2 stationary bike session",id:"x_z2",n:"Zone 2 session (bike / walk)",f:["min","hr"],sets:1,tg:"Week 1 Mon 45 min · Wed 30 min",cue:"LOG MINUTES AND AVERAGE HR. Cool room, fan on. Electrolyte packet if you sweat hard. Five-minute spin-down."},
+  {s:"Skill",q:"change of direction agility drills for sport",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"x_agil",n:"Standalone agility session",f:["rounds","done"],sets:1,tg:"Week 1 Wed · 3 rounds",cue:"The Day C pattern circuit run on its own. Gym floor or hard court. Morning or early afternoon — never 6:30pm."},
+  {s:"Test",q:"backpedal drop step sprint change of direction test",id:"x_cod",n:"CoD test — 5m backpedal → drop-step → 5m sprint",f:["sec"],sets:3,tg:"W1 & W5 · best of 3",cue:"Two lines 5 m apart. Log all three attempts in seconds with decimals (e.g. 4.2). Hand timing is ±0.2 s, so only a change over 0.3 s means anything."},
+  {s:"Other",id:"x_steps",n:"Daily steps",f:["reps"],sets:1,tg:"8,000–10,000 / day",cue:"Log the day's step count in the Reps box. Free Zone 1 volume and the correct soleus stimulus. Easiest to miss on non-training days."}
  ]}
 };
-var WEEKTIP={1:"Week 1 — find your working loads.",2:"Week 2 — add a little where speed/RIR allowed.",3:"Week 3 — push the top of each rep range.",4:"Deload — ~60% load, ~half the sets. Keep it easy."};
 
-/* ---------- STORAGE ---------- */
-var KEY="aa_logger_v1";
-function load(){try{return JSON.parse(localStorage.getItem(KEY))||{sessions:[],draft:null};}catch(e){return{sessions:[],draft:null};}}
-function save(){localStorage.setItem(KEY,JSON.stringify(DB));}
-var DB=load();
-var view="log";var logScreen=null;var previewDay=null;
+/* Legacy Block 1 exercise names so old sessions still display correctly */
+var LEGACY={a_fsq:"Front squat",a_bss:"Bulgarian split squat (DB)",a_ham:"Leg curl (machine)",a_lp:"Leg press or hack squat",a_mob2:"Ankle + hip finisher",a_scr:"Seated calf raise",a_pallof:"Pallof press",a_mob:"Ankle + hip finisher",a_tbjump:"Trap-bar jump",a_broad:"Broad jump",
+b_mb:"Med-ball throw (wall)",b_bench:"Neutral-grip DB bench press",b_pull:"Assisted pull-up",b_lm:"Landmine press",b_row:"Chest-supported DB row",b_inc:"Incline DB press",b_face:"Face pull",b_curl:"Hammer curl (neutral grip)",b_tri:"Overhead DB triceps extension",b_carry:"Suitcase carry",b_mob:"T-spine + shoulder finisher",
+c_agil:"Agility drills",c_pogo:"Pogo hops / jump rope",c_tbdl:"Trap-bar deadlift",c_lunge:"DB reverse lunge",c_push:"DB floor press (neutral grip)",c_row:"Single-arm DB row",c_calf:"Standing calf raise",c_db:"Dead bug",c_sp:"Side plank",c_z2:"Zone 2 finisher"};
+
+function itemById(day,id){
+ var d=PROGRAM[day];
+ if(d){for(var i=0;i<d.items.length;i++)if(d.items[i].id===id)return d.items[i];}
+ for(var k in PROGRAM){var it=PROGRAM[k].items.filter(function(x){return x.id===id;})[0];if(it)return it;}
+ if(LEGACY[id])return{id:id,n:LEGACY[id],f:["load","reps","rir"],legacy:true};
+ return{id:id,n:id,f:["load","reps","rir"],legacy:true};
+}
+function targetFor(it,week){
+ var t=it.tg||"";
+ if(it.wk&&week){var L=it.wk[week-1];t=t.replace("{L}",(L===""||L==null)?"—":L);}
+ return t.replace("{L}","—");
+}
+
+/* =========================================================
+   STORAGE — v2. Every session lives in ONE array from the
+   moment it starts. Nothing depends on remembering to press
+   Finish. Mirrored to a second key on every write.
+   ========================================================= */
+var KEY="aa_logger_v2", MIRROR="aa_logger_v2_mirror", SALVAGE="aa_logger_v2_salvage", OLDKEY="aa_logger_v1";
+var booted=false;
+var DB={sessions:[],lastExport:null,ver:2};
+var view="log", storageOK=true;
+
+function nowISO(){return new Date().toISOString();}
+function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
+function uid(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+
+function readKey(k){try{var raw=localStorage.getItem(k);return raw?JSON.parse(raw):null;}catch(e){return null;}}
+
+function boot(){
+ var cands=[readKey(KEY),readKey(MIRROR),readKey(SALVAGE)].filter(function(x){return x&&x.sessions;});
+ // whichever copy holds the most sessions wins — a half-written or emptied
+ // key can never beat a good one
+ cands.sort(function(x,y){return (y.sessions||[]).length-(x.sessions||[]).length;});
+ if(cands.length)DB=cands[0];
+ // migrate Block 1 data if we have nothing yet (runs even if an empty v2 store exists)
+ if(!DB.sessions||!DB.sessions.length){
+  var old=readKey(OLDKEY);
+  if(old){
+   DB.sessions=(old.sessions||[]).map(function(s){s.status="done";s.block=1;s.id=s.id||uid();return s;});
+   // RECOVER an unfinished draft — this is exactly what was being lost before
+   if(old.draft&&old.draft.entries&&Object.keys(old.draft.entries).length){
+    var d=old.draft;d.status="open";d.block=1;d.id=uid();d.recovered=true;DB.sessions.push(d);
+   }
+  }
+ }
+ if(!DB.sessions)DB.sessions=[];
+ DB.ver=2;
+ booted=true;
+ autoCloseStale();
+ save();
+}
+/* Writing is guarded. A save can never silently replace a bigger store with a
+   smaller one: any shrink is stashed to a salvage key first, and a save that
+   would wipe the store back to zero is refused outright. */
+function save(allowShrink){
+ if(!booted)return;
+ DB.updated=nowISO();
+ var payload=JSON.stringify(DB);
+ try{
+  var prev=readKey(KEY);
+  var prevN=prev&&prev.sessions?prev.sessions.length:0, curN=(DB.sessions||[]).length;
+  if(prevN>curN){
+   if(curN===0&&!allowShrink){            // pathological — refuse and reload the good copy
+    DB=prev;storageOK=true;flashSaved();return;
+   }
+   try{localStorage.setItem(SALVAGE,JSON.stringify(prev));}catch(e2){}
+   payload=JSON.stringify(DB);
+  }
+  localStorage.setItem(KEY,payload);
+  localStorage.setItem(MIRROR,payload);
+  storageOK=true;
+ }catch(e){storageOK=false;}
+ flashSaved();
+}
+var saveT=null;
+function flashSaved(){
+ var el=document.getElementById("saveDot");if(!el)return;
+ if(!storageOK){el.style.color="var(--bad)";el.textContent="⚠︎ Could not save to this device — export now.";return;}
+ el.style.color="var(--good)";
+ el.textContent="✓ saved "+new Date().toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"});
+ clearTimeout(saveT);saveT=setTimeout(function(){el.textContent="";},4000);
+}
+/* Any session left open for more than 18 hours is closed automatically.
+   A forgotten session can no longer disappear from History or the export. */
+function autoCloseStale(){
+ var cut=Date.now()-18*3600*1000, changed=false;
+ DB.sessions.forEach(function(s){
+  if(s.status==="open"){
+   var t=Date.parse(s.updated||s.started||"")||0;
+   if(t&&t<cut){s.status="done";s.autoClosed=true;changed=true;}
+  }
+ });
+ return changed;
+}
+function hasData(s){
+ return Object.keys(s.entries||{}).some(function(k){
+  var e=s.entries[k];if(!e)return false;
+  if(e.done||e.txt)return true;
+  return (e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});});
+ });
+}
+function openSessions(){return DB.sessions.filter(function(s){return s.status==="open";});}
+function daysSinceExport(){if(!DB.lastExport)return null;return Math.floor((Date.now()-Date.parse(DB.lastExport))/86400000);}
 
 /* ---------- HELPERS ---------- */
 function el(h){var d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;}
 function esc(s){return(s==null?"":String(s)).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
-function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");}
 function e1rm(w,r){w=parseFloat(w);r=parseFloat(r);if(!w||!r)return null;return Math.round(w*(1+r/30));}
-function lastFor(id){for(var i=DB.sessions.length-1;i>=0;i--){var e=DB.sessions[i].entries[id];if(e&&e.sets&&e.sets.some(function(s){return s.w||s.r||s.min;}))return{sess:DB.sessions[i],e:e};}return null;}
+function lastFor(id,exceptId){
+ for(var i=DB.sessions.length-1;i>=0;i--){
+  var s=DB.sessions[i];if(s.id===exceptId)continue;
+  var e=s.entries&&s.entries[id];
+  if(e&&(e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});}))return{sess:s,e:e};
+ }
+ return null;
+}
+function setStr(it,st){
+ var f=it.f||[],out=[];
+ if(f.indexOf("load")>=0&&st.load)out.push(st.load+" lb");
+ if(f.indexOf("loadh")>=0&&st.loadh)out.push(st.loadh+" lb/hand");
+ if(f.indexOf("assist")>=0&&st.assist)out.push(st.assist+" assist");
+ if(f.indexOf("ball")>=0&&st.ball)out.push(st.ball+" lb ball");
+ if(f.indexOf("pin")>=0&&st.pin)out.push("pin "+st.pin);
+ if(f.indexOf("reps")>=0&&st.reps)out.push(st.reps+" reps");
+ if(f.indexOf("rside")>=0&&st.rside)out.push(st.rside+"/side");
+ if(f.indexOf("rleg")>=0&&st.rleg)out.push(st.rleg+"/leg");
+ if(f.indexOf("distm")>=0&&st.distm)out.push(st.distm+" m");
+ if(f.indexOf("distin")>=0&&st.distin)out.push(st.distin+" in");
+ if(f.indexOf("hgtin")>=0&&st.hgtin)out.push(st.hgtin+" in");
+ if(f.indexOf("sec")>=0&&st.sec)out.push(st.sec+" s");
+ if(f.indexOf("min")>=0&&st.min)out.push(st.min+" min");
+ if(f.indexOf("hr")>=0&&st.hr)out.push(st.hr+" bpm");
+ if(f.indexOf("ivals")>=0&&st.ivals)out.push(st.ivals+" intervals");
+ if(f.indexOf("rpe")>=0&&st.rpe)out.push("RPE "+st.rpe);
+ if(f.indexOf("rounds")>=0&&st.rounds)out.push(st.rounds+" rounds");
+ if(f.indexOf("rir")>=0&&st.rir!==""&&st.rir!=null)out.push("@"+st.rir+" RIR");
+ return out.join(" · ");
+}
 
 /* ---------- ROUTER ---------- */
-function go(v){if(v==="log"){logScreen=null;previewDay=null;}view=v;["log","hist","data","elbow","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
-function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else if(view==="elbow")renderElbow(a);else renderInfo(a);}
+function go(v){view=v;["log","hist","data","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
+function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else renderInfo(a);}
 
 /* ---------- LOG ---------- */
+var sel={week:null},activeId=null,NOTEOPEN={};
 function renderLog(a){
- if(logScreen==="preview"&&previewDay){renderPreview(a,previewDay);return;}
- var d=DB.draft;
- if(d&&logScreen!=="pick"){renderSession(a,d);return;}
- renderPicker(a);
-}
-function renderPicker(a){
- if(!sel.week)sel.week=(DB.sessions.length?DB.sessions[DB.sessions.length-1].week:1);
- document.getElementById("hdrS").textContent="Choose a day";
- if(DB.draft){var dr=DB.draft;var res=el('<button class="btn gold">▶ Resume: Day '+dr.day+' · Week '+dr.week+'</button>');res.onclick=function(){logScreen=null;render();};a.appendChild(res);}
- a.appendChild(el('<div class="note">Tap a day to see its exercises and what you did last time. Press <b>Start</b> inside to log it. Everything is saved on this phone.</div>'));
+ if(activeId){var s=DB.sessions.filter(function(x){return x.id===activeId;})[0];if(s)return renderSession(a,s);activeId=null;}
+ document.getElementById("hdrS").textContent=BLOCK+" · start or resume a session";
+ if(!storageOK)a.appendChild(el('<div class="warn"><b>This device is refusing to save.</b> Do not log a session until this is fixed — go to the Send tab and export what you have now.</div>'));
+ var dse=daysSinceExport();
+ if(dse!==null&&dse>=14)a.appendChild(el('<div class="warn"><b>'+dse+' days since your last export.</b> iPhones can clear web-app storage. Send a backup from the Send tab.</div>'));
+
+ var open=openSessions();
+ if(open.length){
+  a.appendChild(el('<div class="lbl">In progress — tap to continue</div>'));
+  open.forEach(function(s){
+   var b=el('<button class="btn gold">'+esc(s.date)+' · '+dayLabel(s.day)+' (W'+s.week+') — resume</button>');
+   b.onclick=function(){activeId=s.id;render();};a.appendChild(b);
+  });
+  a.appendChild(el('<div class="mut">These are already saved. Resuming just adds to them.</div>'));
+ }
+
+ a.appendChild(el('<div class="note">Everything is saved the instant you type it, and a session is stored the moment you start it. You never have to remember to press anything for your data to survive.</div>'));
  a.appendChild(el('<div class="lbl">Week of block</div>'));
- var wk=el('<div class="pick"></div>');[1,2,3,4].forEach(function(w){var c=el('<div class="chip'+(sel.week===w?' on':'')+'">W'+w+(w===4?"·DL":"")+'</div>');c.onclick=function(){sel.week=w;[].forEach.call(wk.children,function(x,i){x.classList.toggle("on",i===w-1);});};wk.appendChild(c);});a.appendChild(wk);
- a.appendChild(el('<div class="lbl">Day — tap to view</div>'));
- ["A","B","C"].forEach(function(k){var b=el('<button class="btn sec">Day '+k+' — '+esc(PROGRAM[k].name.split("—")[1].trim())+'</button>');b.onclick=function(){previewDay=k;logScreen="preview";render();};a.appendChild(b);});
- var last=DB.sessions[DB.sessions.length-1];
- if(last)a.appendChild(el('<div class="mut" style="margin-top:14px">Last logged: '+esc(last.date)+' · Day '+last.day+' (W'+last.week+')</div>'));
-}
-function renderPreview(a,day){
- var P=PROGRAM[day];
- document.getElementById("hdrS").textContent="Day "+day+" · preview";
- var back=el('<button class="btn ghost">‹ Back to days</button>');back.onclick=function(){logScreen="pick";previewDay=null;render();};a.appendChild(back);
- a.appendChild(el('<h2 class="scr">'+esc(P.name)+'</h2>'));
- a.appendChild(el('<div class="note">'+esc(WEEKTIP[sel.week]||"")+'</div>'));
- if(DB.draft&&DB.draft.day===day){var rz=el('<button class="btn gold">▶ Resume logging this day</button>');rz.onclick=function(){logScreen=null;render();};a.appendChild(rz);}
- else{var st=el('<button class="btn">▶ Start logging Day '+day+' (Week '+sel.week+')</button>');st.onclick=function(){if(DB.draft&&DB.draft.day!==day){if(!confirm("You have Day "+DB.draft.day+" in progress. Starting Day "+day+" will replace it. Continue?"))return;}startSession(day,sel.week);};a.appendChild(st);}
- var curSec="";
- P.items.forEach(function(it){
-  if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
-  var card=el('<div class="card"></div>');
-  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
-  card.appendChild(el('<div class="tgt">'+esc(it.tg)+'</div>'));
-  if(it.v)card.appendChild(el('<div class="meta">\u25B6 <a href="'+it.v+'" target="_blank" rel="noopener">Watch demo</a></div>'));
-  var lf=lastFor(it.id);
-  if(lf){var parts=lf.e.sets.filter(function(s){return s.w||s.r||s.min;}).map(function(s){return s.min?(s.min+"min"):((s.w?s.w+"×":"")+(s.r||"?")+(s.rir!==""&&s.rir!=null?"@"+s.rir:""));});card.appendChild(el('<div class="meta">Last ('+esc(lf.sess.date)+'): <b>'+esc(parts.join(", "))+'</b></div>'));}
-  else card.appendChild(el('<div class="meta">Last: <b>—</b></div>'));
-  a.appendChild(card);
+ var wk=el('<div class="pick"></div>');
+ for(var w=1;w<=NWEEKS;w++)(function(w){
+  var c=el('<div class="chip'+(sel.week===w?" on":"")+'">W'+w+(w===5?"·DL":"")+'</div>');
+  c.onclick=function(){sel.week=w;render();};wk.appendChild(c);
+ })(w);
+ a.appendChild(wk);
+ if(sel.week)a.appendChild(el('<div class="note">'+esc(WEEKTIP[sel.week])+'</div>'));
+ a.appendChild(el('<div class="lbl">Session</div>'));
+ ["A","B","C","T","X"].forEach(function(k){
+  var b=el('<button class="btn sec">'+dayLabel(k)+' — '+esc(PROGRAM[k].short)+'</button>');
+  b.onclick=function(){if(!sel.week){alert("Pick a week first.");return;}startSession(k,sel.week);};
+  a.appendChild(b);
  });
- var back2=el('<button class="btn ghost">‹ Back to days</button>');back2.onclick=function(){logScreen="pick";previewDay=null;render();};a.appendChild(back2);
+ var done=DB.sessions.filter(function(s){return s.status==="done";});
+ if(done.length)a.appendChild(el('<div class="mut" style="margin-top:14px">'+done.length+' completed sessions stored · last: '+esc(done[done.length-1].date)+'</div>'));
 }
-function renderSession(a,d){
- document.getElementById("hdrS").textContent="Day "+d.day+" · Week "+d.week+" · "+d.date;
- var back=el('<button class="btn ghost">‹ Days (keeps my progress)</button>');back.onclick=function(){logScreen="pick";render();};a.appendChild(back);
- a.appendChild(el('<h2 class="scr">'+esc(PROGRAM[d.day].name)+'</h2>'));
- a.appendChild(el('<div class="note">'+esc(WEEKTIP[d.week])+'</div>'));
+function dayLabel(k){return k==="T"?"Tuesday":(k==="X"?"Tennis / Cardio":"Day "+k);}
+
+function startSession(day,week){
+ var s={id:uid(),date:today(),day:day,week:week,block:2,entries:{},note:"",dizzy:false,status:"open",started:nowISO(),updated:nowISO()};
+ DB.sessions.push(s);save();activeId=s.id;render();
+}
+function renderSession(a,s){
+ document.getElementById("hdrS").textContent=dayLabel(s.day)+" · Week "+s.week+" · "+s.date;
+ var back=el('<button class="btn ghost sm">‹ Save and close</button>');
+ back.onclick=function(){activeId=null;go("log");};a.appendChild(back);
+ a.appendChild(el('<h2 class="scr">'+esc(PROGRAM[s.day].name)+'</h2>'));
+ a.appendChild(el('<div class="note">'+esc(WEEKTIP[s.week]||"")+'</div>'));
+ a.appendChild(el('<div class="note">'+esc(LOADRULE)+'</div>'));
  var curSec="";
- PROGRAM[d.day].items.forEach(function(it){if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}a.appendChild(exCard(it));});
- var nt=el('<div class="card"><div class="exn">Session notes</div><textarea id="snote" rows="3" placeholder="Energy, joints, anything worth flagging...">'+esc(d.note||"")+'</textarea></div>');
- nt.querySelector("textarea").addEventListener("input",function(e){DB.draft.note=e.target.value;save();});
+ PROGRAM[s.day].items.forEach(function(it){
+  if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
+  a.appendChild(exCard(it,s));
+ });
+ // session-level extras
+ var dz=el('<div class="card"><div class="exn">Any light-headedness today?</div><div class="done"><input type="checkbox" '+(s.dizzy?"checked":"")+'><span class="mut">Yes — it happened</span></div><div class="cue">Standing open item. If yes: stop, sit, hydrate, and tell the board. Never play through it on sand.</div></div>');
+ dz.querySelector("input").addEventListener("change",function(e){s.dizzy=e.target.checked;s.updated=nowISO();save();});
+ a.appendChild(dz);
+ var nt=el('<div class="card"><div class="exn">Session notes</div><textarea rows="3" placeholder="Energy, joints, anything worth flagging...">'+esc(s.note||"")+'</textarea></div>');
+ nt.querySelector("textarea").addEventListener("input",function(e){s.note=e.target.value;s.updated=nowISO();save();});
  a.appendChild(nt);
- var fin=el('<button class="btn gold">Finish & save workout</button>');fin.onclick=finish;a.appendChild(fin);
- var disc=el('<button class="btn ghost">Discard this workout</button>');disc.onclick=function(){if(confirm("Discard this unsaved workout?")){DB.draft=null;logScreen=null;save();render();}};a.appendChild(disc);
+ var fin=el('<button class="btn gold">Mark session complete</button>');
+ fin.onclick=function(){s.status="done";s.updated=nowISO();save();activeId=null;alert("Marked complete. It was already saved — this just tidies History.");go("hist");};
+ a.appendChild(fin);
+ a.appendChild(el('<div class="mut">This session is already stored. "Complete" only moves it out of the in-progress list.</div>'));
 }
-function exCard(it){
- var d=DB.draft;var ent=d.entries[it.id]||(d.entries[it.id]={sets:[]});
+
+function exCard(it,s){
+ var ent=s.entries[it.id]||(s.entries[it.id]={sets:[]});
  var card=el('<div class="card"></div>');
  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
- card.appendChild(el('<div class="tgt">'+esc(it.tg)+'</div>'));
- if(it.v)card.appendChild(el('<div class="meta">\u25B6 <a href="'+it.v+'" target="_blank" rel="noopener">Watch demo</a></div>'));
- // last-time
- var lf=lastFor(it.id);
- if(lf){var parts=lf.e.sets.filter(function(s){return s.w||s.r||s.min;}).map(function(s){return s.min?(s.min+"min"):((s.w?s.w+"×":"")+(s.r||"?")+(s.rir!==""&&s.rir!=null?"@"+s.rir:""));});
-  card.appendChild(el('<div class="meta">Last ('+esc(lf.sess.date)+'): <b>'+esc(parts.join(", "))+'</b></div>'));}
+ var tg=targetFor(it,s.week);if(tg)card.appendChild(el('<div class="tgt">'+esc(tg)+'</div>'));
+ if(it.cue||it.q){
+  var tools=el('<div class="tools"></div>');
+  var cueBox=null;
+  if(it.cue){
+   cueBox=el('<div class="cue cuebox" style="display:none">'+esc(it.cue)+'</div>');
+   var nb=el('<div class="tool">ⓘ Coaching notes</div>');
+   nb.onclick=function(){
+    var open=cueBox.style.display==="none";
+    cueBox.style.display=open?"block":"none";
+    nb.classList.toggle("on",open);
+    NOTEOPEN[it.id]=open;
+   };
+   tools.appendChild(nb);
+   if(NOTEOPEN[it.id]){cueBox.style.display="block";nb.classList.add("on");}
+  }
+  if(it.v||it.q){
+   var href=it.v?it.v:("https://www.youtube.com/results?search_query="+encodeURIComponent(it.q));
+   var label=it.v?"▶ Video":"▶ Find video";
+   tools.appendChild(el('<a class="tool" target="_blank" rel="noopener" href="'+href+'">'+label+'</a>'));
+  }
+  card.appendChild(tools);
+  if(cueBox)card.appendChild(cueBox);
+ }
+ var lf=lastFor(it.id,s.id);
+ if(lf)card.appendChild(el('<div class="meta">Last ('+esc(lf.sess.date)+'): <b>'+esc((lf.e.sets||[]).filter(function(st){return setStr(it,st);}).map(function(st){return setStr(it,st);}).join(" | "))+'</b></div>'));
  else card.appendChild(el('<div class="meta">Last: <b>—</b> (first time)</div>'));
- if(it.t==="x"){
+
+ var fields=(it.f||[]).filter(function(f){return f!=="done";});
+ var wantsDone=(it.f||[]).indexOf("done")>=0;
+
+ if(fields.length){
+  if(ent.sets.length===0){var n=it.sets||3;for(var i=0;i<n;i++)ent.sets.push({});}
+  card.appendChild(el('<div class="caps">'+fields.map(function(f){return '<span>'+esc(FT[f].cap)+'</span>';}).join("")+'</div>'));
+  var body=el('<div></div>');
+  function drawSets(){
+   body.innerHTML="";
+   ent.sets.forEach(function(st,i){
+    var row=el('<div class="setrow"><div class="n">'+(i+1)+'</div></div>');
+    fields.forEach(function(f){
+     var inp=el('<input type="number" inputmode="decimal" step="any" placeholder="'+esc(FT[f].ph)+'" value="'+esc(st[f]!==undefined?st[f]:"")+'">');
+     inp.addEventListener("input",function(e){st[f]=e.target.value;s.updated=nowISO();save();updEst();});
+     row.appendChild(inp);
+    });
+    body.appendChild(row);
+   });
+  }
+  drawSets();card.appendChild(body);
+  var add=el('<button class="addset">+ add set</button>');
+  add.onclick=function(){ent.sets.push({});s.updated=nowISO();save();drawSets();};card.appendChild(add);
+  var est=el('<div class="est"></div>');card.appendChild(est);
+  function updEst(){
+   var lk=LOADK.filter(function(k){return fields.indexOf(k)>=0;})[0];
+   if(!lk||fields.indexOf("rir")<0){est.textContent="";return;}
+   var best=0;ent.sets.forEach(function(st){var e=e1rm(st[lk],st.reps||st.rleg||st.rside);if(e&&e>best)best=e;});
+   est.textContent=best?("Est. 1RM ≈ "+best+" lb"):"";
+  }
+  updEst();
+ }
+ if(wantsDone){
   var dn=el('<div class="done"><input type="checkbox" '+(ent.done?"checked":"")+'><span class="mut">Mark done</span></div>');
-  dn.querySelector("input").addEventListener("change",function(e){ent.done=e.target.checked;save();});
+  dn.querySelector("input").addEventListener("change",function(e){ent.done=e.target.checked;s.updated=nowISO();save();});
   card.appendChild(dn);
   var tn=el('<textarea rows="2" placeholder="notes (optional)">'+esc(ent.txt||"")+'</textarea>');
-  tn.addEventListener("input",function(e){ent.txt=e.target.value;save();});card.appendChild(tn);
-  return card;
+  tn.addEventListener("input",function(e){ent.txt=e.target.value;s.updated=nowISO();save();});card.appendChild(tn);
  }
- // ensure default set rows
- if(ent.sets.length===0){var n=it.sets||3;for(var i=0;i<n;i++)ent.sets.push({w:"",r:"",rir:"",min:""});}
- // caption
- if(it.t==="w")card.appendChild(el('<div class="caps"><span>Load</span><span>Reps</span><span>RIR</span></div>'));
- else if(it.t==="wr")card.appendChild(el('<div class="caps"><span>Load</span><span>Reps</span></div>'));
- else if(it.t==="r")card.appendChild(el('<div class="caps"><span>Reps</span><span>RIR</span></div>'));
- else card.appendChild(el('<div class="caps"><span>Minutes</span></div>'));
- var body=el('<div></div>');
- function drawSets(){
-  body.innerHTML="";
-  ent.sets.forEach(function(st,i){
-   var r=el('<div class="setrow"><div class="n">'+(i+1)+'</div></div>');
-   function mk(field,ph){var inp=el('<input type="number" inputmode="decimal" placeholder="'+ph+'" value="'+(st[field]!==undefined?st[field]:"")+'">');inp.addEventListener("input",function(e){st[field]=e.target.value;save();updEst();});return inp;}
-   if(it.t==="w"){r.appendChild(mk("w","lb"));r.appendChild(mk("r","reps"));r.appendChild(mk("rir","rir"));}
-   else if(it.t==="wr"){r.appendChild(mk("w","lb"));r.appendChild(mk("r","reps"));}
-   else if(it.t==="r"){r.appendChild(mk("r","reps"));r.appendChild(mk("rir","rir"));}
-   else{r.appendChild(mk("min","min"));}
-   body.appendChild(r);
-  });
- }
- drawSets();card.appendChild(body);
- var setbtns=el('<div class="row"></div>');
- var add=el('<button class="addset">+ add set</button>');add.onclick=function(){ent.sets.push({w:"",r:"",rir:"",min:""});save();drawSets();};
- var rm=el('<button class="addset">− remove set</button>');rm.onclick=function(){if(ent.sets.length>1){ent.sets.pop();save();drawSets();updEst();}};
- setbtns.appendChild(add);setbtns.appendChild(rm);card.appendChild(setbtns);
- var est=el('<div class="est"></div>');card.appendChild(est);
- function updEst(){if(it.t!=="w"){est.textContent="";return;}var best=0;ent.sets.forEach(function(s){var e=e1rm(s.w,s.r);if(e&&e>best)best=e;});est.textContent=best?("Est. 1RM ≈ "+best+" lb"):"";}
- updEst();
  return card;
-}
-function startSession(day,week){DB.draft={date:today(),day:day,week:week,entries:{},note:""};logScreen=null;previewDay=null;save();render();}
-function finish(){
- var d=DB.draft;if(!d)return;
- var any=Object.keys(d.entries).some(function(k){var e=d.entries[k];return e.done||e.txt||(e.sets&&e.sets.some(function(s){return s.w||s.r||s.min;}));});
- if(!any){alert("Nothing logged yet.");return;}
- DB.sessions.push(d);DB.draft=null;save();
- alert("Saved. Day "+d.day+" (W"+d.week+") logged.");go("hist");
 }
 
 /* ---------- HISTORY ---------- */
 function renderHist(a){
- document.getElementById("hdrS").textContent="History · "+DB.sessions.length+" workouts";
+ var done=DB.sessions.filter(function(s){return s.status==="done";});
+ document.getElementById("hdrS").textContent="History · "+DB.sessions.length+" sessions";
  a.appendChild(el('<h2 class="scr">History</h2>'));
- if(DB.sessions.length===0){a.appendChild(el('<div class="mut">No workouts saved yet. Log one from the Log tab.</div>'));return;}
- for(var i=DB.sessions.length-1;i>=0;i--){(function(s,idx){
-  var cnt=Object.keys(s.entries).filter(function(k){var e=s.entries[k];return e.done||(e.sets&&e.sets.some(function(x){return x.w||x.r||x.min;}));}).length;
-  var h=el('<div class="hist"><div class="d">'+esc(s.date)+' · Day '+s.day+' <span class="mut">(Week '+s.week+')</span></div><div class="m">'+cnt+' exercises logged'+(s.note?' · "'+esc(s.note.slice(0,60))+'"':"")+'</div></div>');
-  h.onclick=function(){showSession(idx);};a.appendChild(h);
- })(DB.sessions[i],i);}
+ if(!DB.sessions.length){a.appendChild(el('<div class="mut">Nothing saved yet.</div>'));return;}
+ a.appendChild(el('<div class="mut">'+done.length+' complete · '+openSessions().length+' in progress. Everything here is included in the export.</div>'));
+ for(var i=DB.sessions.length-1;i>=0;i--)(function(s){
+  var cnt=Object.keys(s.entries||{}).filter(function(k){
+   var e=s.entries[k];return e&&(e.done||(e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});}));
+  }).length;
+  var flags=(s.status==="open"?'<span class="badge">IN PROGRESS</span>':"")+(s.autoClosed?'<span class="badge">AUTO-CLOSED</span>':"")+(s.recovered?'<span class="badge">RECOVERED</span>':"")+(s.dizzy?'<span class="badge" style="background:var(--bad);color:#fff">LIGHT-HEADED</span>':"");
+  var h=el('<div class="hist'+(s.status==="open"?" open":"")+'"><div class="d">'+esc(s.date)+' · '+dayLabel(s.day)+' <span class="mut">(W'+s.week+(s.block===1?" · Block 1":"")+')</span>'+flags+'</div><div class="m">'+cnt+' exercises logged'+(s.note?' · "'+esc(s.note.slice(0,50))+'"':"")+'</div></div>');
+  h.onclick=function(){showSession(s.id);};a.appendChild(h);
+ })(DB.sessions[i]);
 }
-function showSession(idx){
- var s=DB.sessions[idx];var a=document.getElementById("app");a.innerHTML="";
- var back=el('<button class="btn ghost">‹ Back to history</button>');back.onclick=function(){go("hist");};a.appendChild(back);
- a.appendChild(el('<h2 class="scr">'+esc(s.date)+' · Day '+s.day+' (W'+s.week+')</h2>'));
- PROGRAM[s.day].items.forEach(function(it){
-  var e=s.entries[it.id];if(!e)return;
-  var lines=[];
-  if(e.sets)e.sets.forEach(function(st,i){if(st.w||st.r||st.min)lines.push("Set "+(i+1)+": "+(st.min?st.min+" min":((st.w?st.w+" lb × ":"")+(st.r||"?")+" reps"+(st.rir!==""&&st.rir!=null?" @ RIR "+st.rir:""))));});
+function showSession(id){
+ var s=DB.sessions.filter(function(x){return x.id===id;})[0];if(!s)return;
+ var a=document.getElementById("app");a.innerHTML="";
+ var back=el('<button class="btn ghost sm">‹ Back to history</button>');back.onclick=function(){go("hist");};a.appendChild(back);
+ a.appendChild(el('<h2 class="scr">'+esc(s.date)+' · '+dayLabel(s.day)+' (W'+s.week+')</h2>'));
+ var ids=Object.keys(s.entries||{});
+ ids.forEach(function(id2){
+  var it=itemById(s.day,id2),e=s.entries[id2],lines=[];
+  (e.sets||[]).forEach(function(st,i){var t=setStr(it,st);if(t)lines.push("Set "+(i+1)+": "+t);});
   if(e.done)lines.push("✓ done"+(e.txt?" — "+e.txt:""));
-  if(!lines.length)return;
-  a.appendChild(el('<div class="card"><div class="exn">'+esc(it.n)+'</div><div class="meta">'+lines.map(esc).join("<br>")+'</div></div>'));
+  else if(e.txt)lines.push(e.txt);
+  if(lines.length)a.appendChild(el('<div class="card"><div class="exn">'+esc(it.n)+'</div><div class="meta">'+lines.map(esc).join("<br>")+'</div></div>'));
  });
+ if(s.dizzy)a.appendChild(el('<div class="warn">Light-headedness reported this session.</div>'));
  if(s.note)a.appendChild(el('<div class="card"><div class="exn">Notes</div><div class="meta">'+esc(s.note)+'</div></div>'));
- var del=el('<button class="btn ghost" style="margin-top:14px">Delete this workout</button>');del.onclick=function(){if(confirm("Delete this workout?")){DB.sessions.splice(idx,1);save();go("hist");}};a.appendChild(del);
+ if(s.status==="open"){var re=el('<button class="btn gold">Resume this session</button>');re.onclick=function(){activeId=s.id;go("log");};a.appendChild(re);}
+ var del=el('<button class="btn ghost" style="margin-top:14px">Delete this session</button>');
+ del.onclick=function(){
+  if(!confirm("Delete this session permanently? This cannot be undone."))return;
+  if(!confirm("Really delete "+s.date+" "+dayLabel(s.day)+"? Export first if you are not sure."))return;
+  DB.sessions=DB.sessions.filter(function(x){return x.id!==s.id;});save(true);go("hist");
+ };
+ a.appendChild(del);
 }
 
 /* ---------- EXPORT ---------- */
+var CSVCOLS=["date","block","week","day","session_status","exercise","set","load_lb","load_per_hand_lb","assist_lb","ball_lb","stack_pin","reps","reps_per_side","reps_per_leg","rir","distance_m","distance_in","height_in","seconds","minutes","avg_hr","rpe","intervals","rounds","done","light_headed","note"];
+var COLMAP={load:"load_lb",loadh:"load_per_hand_lb",assist:"assist_lb",ball:"ball_lb",pin:"stack_pin",reps:"reps",rside:"reps_per_side",rleg:"reps_per_leg",rir:"rir",distm:"distance_m",distin:"distance_in",hgtin:"height_in",sec:"seconds",min:"minutes",hr:"avg_hr",rpe:"rpe",ivals:"intervals",rounds:"rounds"};
 function buildCSV(){
- var rows=[["date","day","week","exercise","set","load_lb","reps","rir","minutes","done","note"]];
+ var rows=[CSVCOLS.slice()];
  DB.sessions.forEach(function(s){
-  PROGRAM[s.day].items.forEach(function(it){
-   var e=s.entries[it.id];if(!e)return;
-   if(e.sets&&e.sets.length){e.sets.forEach(function(st,i){if(st.w||st.r||st.min)rows.push([s.date,s.day,s.week,it.n,i+1,st.w||"",st.r||"",st.rir||"",st.min||"","",""]);});}
-   if(e.done)rows.push([s.date,s.day,s.week,it.n,"","","","","","yes",(e.txt||"")]);
+  var ids=Object.keys(s.entries||{});
+  ids.forEach(function(id){
+   var it=itemById(s.day,id),e=s.entries[id];
+   (e.sets||[]).forEach(function(st,i){
+    if(!Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;}))return;
+    var r={};CSVCOLS.forEach(function(c){r[c]="";});
+    r.date=s.date;r.block=s.block||2;r.week=s.week;r.day=s.day;r.session_status=s.status;r.exercise=it.n;r.set=i+1;r.light_headed=s.dizzy?"yes":"";
+    (it.f||[]).forEach(function(f){if(COLMAP[f]&&st[f]!==""&&st[f]!=null)r[COLMAP[f]]=st[f];});
+    rows.push(CSVCOLS.map(function(c){return r[c];}));
+   });
+   if(e.done||e.txt){
+    var r2={};CSVCOLS.forEach(function(c){r2[c]="";});
+    r2.date=s.date;r2.block=s.block||2;r2.week=s.week;r2.day=s.day;r2.session_status=s.status;r2.exercise=it.n;r2.done=e.done?"yes":"";r2.note=e.txt||"";r2.light_headed=s.dizzy?"yes":"";
+    rows.push(CSVCOLS.map(function(c){return r2[c];}));
+   }
   });
-  if(s.note)rows.push([s.date,s.day,s.week,"SESSION NOTE","","","","","","",s.note]);
+  if(s.note){
+   var r3={};CSVCOLS.forEach(function(c){r3[c]="";});
+   r3.date=s.date;r3.block=s.block||2;r3.week=s.week;r3.day=s.day;r3.session_status=s.status;r3.exercise="SESSION NOTE";r3.note=s.note;r3.light_headed=s.dizzy?"yes":"";
+   rows.push(CSVCOLS.map(function(c){return r3[c];}));
+  }
  });
- return rows.map(function(r){return r.map(function(c){c=String(c);return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(",");}).join("\n");
+ return rows.map(function(r){return r.map(function(c){c=(c==null?"":String(c));return /[",\n]/.test(c)?'"'+c.replace(/"/g,'""')+'"':c;}).join(",");}).join("\n");
 }
 function buildText(){
- if(!DB.sessions.length)return "No workouts logged yet.";
- var out=["ATHLETIC AGING — TRAINING LOG EXPORT","Generated "+today(),""];
+ if(!DB.sessions.length)return "No sessions logged yet.";
+ var out=["ATHLETIC AGING — TRAINING LOG EXPORT","Generated "+today()+" · "+DB.sessions.length+" sessions",""];
  DB.sessions.forEach(function(s){
-  out.push("=== "+s.date+" · Day "+s.day+" · Week "+s.week+" ===");
-  PROGRAM[s.day].items.forEach(function(it){
-   var e=s.entries[it.id];if(!e)return;var parts=[];
-   if(e.sets)e.sets.forEach(function(st){if(st.w||st.r||st.min)parts.push(st.min?st.min+"min":((st.w?st.w+"x":"")+(st.r||"?")+(st.rir!==""&&st.rir!=null?"@"+st.rir:"")));});
+  out.push("=== "+s.date+" · "+dayLabel(s.day)+" · Week "+s.week+(s.block===1?" · BLOCK 1":"")+(s.status==="open"?" · IN PROGRESS":"")+(s.autoClosed?" · auto-closed":"")+" ===");
+  Object.keys(s.entries||{}).forEach(function(id){
+   var it=itemById(s.day,id),e=s.entries[id],parts=[];
+   (e.sets||[]).forEach(function(st){var t=setStr(it,st);if(t)parts.push(t);});
    if(e.done)parts.push("done"+(e.txt?" ("+e.txt+")":""));
-   if(parts.length)out.push("  "+it.n+": "+parts.join(", "));
+   else if(e.txt)parts.push("("+e.txt+")");
+   if(parts.length)out.push("  "+it.n+": "+parts.join(" | "));
   });
+  if(s.dizzy)out.push("  ** LIGHT-HEADEDNESS REPORTED **");
   if(s.note)out.push("  NOTE: "+s.note);
   out.push("");
  });
  return out.join("\n");
 }
-function dl(name,text,type){var b=new Blob([text],{type:type});var u=URL.createObjectURL(b);var a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},100);}
-function renderData(a){
- document.getElementById("hdrS").textContent="Export & backup";
- a.appendChild(el('<h2 class="scr">Export & Backup</h2>'));
- a.appendChild(el('<div class="mut">At the end of each block, send me your data. Easiest: tap <b>Copy summary</b> and paste it into our chat — or download a file and upload it. The JSON backup also restores your history if you ever need it.</div>'));
- var c=el('<button class="btn">📋 Copy summary (paste to chat)</button>');c.onclick=function(){var t=buildText();navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t).then(function(){alert("Copied — paste it into the chat.");},function(){prompt("Copy this:",t);}):prompt("Copy this:",t);};a.appendChild(c);
- var csv=el('<button class="btn sec">⬇︎ Download CSV (for the board)</button>');csv.onclick=function(){dl("training_log_"+today()+".csv",buildCSV(),"text/csv");};a.appendChild(csv);
- var js=el('<button class="btn sec">⬇︎ Download JSON backup</button>');js.onclick=function(){dl("training_backup_"+today()+".json",JSON.stringify(DB),"application/json");};a.appendChild(js);
- a.appendChild(el('<div class="lbl">Restore from a backup</div>'));
- var imp=el('<input type="file" accept=".json" style="color:var(--mut);font-size:13px">');
- imp.addEventListener("change",function(e){var f=e.target.files[0];if(!f)return;var rd=new FileReader();rd.onload=function(){try{var o=JSON.parse(rd.result);if(o&&o.sessions){if(confirm("Replace current data with this backup? ("+o.sessions.length+" workouts)")){DB=o;save();alert("Restored.");go("hist");}}else alert("Not a valid backup file.");}catch(x){alert("Could not read that file.");}};rd.readAsText(f);});
- a.appendChild(imp);
- a.appendChild(el('<div class="mut" style="margin-top:16px">'+DB.sessions.length+' workouts stored on this phone.</div>'));
+function markExported(){DB.lastExport=nowISO();save();}
+
+/* Sharing: the iPhone share sheet first (works inside a home-screen app,
+   where a plain download link silently fails), then download, then plain text. */
+function sendFile(name,text,mime){
+ markExported();
+ try{
+  var file=new File([text],name,{type:mime});
+  if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
+   navigator.share({files:[file],title:name}).catch(function(){fallbackSend(name,text,mime);});
+   return;
+  }
+ }catch(e){}
+ fallbackSend(name,text,mime);
 }
+function fallbackSend(name,text,mime){
+ try{
+  var b=new Blob([text],{type:mime}),u=URL.createObjectURL(b);
+  var a=document.createElement("a");a.href=u;a.download=name;a.rel="noopener";
+  document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},400);
+  setTimeout(function(){
+   if(confirm("If nothing downloaded, tap OK to show the data as text so you can copy it."))showText(text);
+  },900);
+ }catch(e){showText(text);}
+}
+function showText(text){
+ var a=document.getElementById("app");a.innerHTML="";
+ var back=el('<button class="btn ghost sm">‹ Back</button>');back.onclick=function(){go("data");};a.appendChild(back);
+ a.appendChild(el('<h2 class="scr">Copy this</h2>'));
+ a.appendChild(el('<div class="mut">Tap in the box, Select All, Copy. Then paste it into Mail or the chat.</div>'));
+ var ta=el('<textarea rows="18"></textarea>');ta.value=text;a.appendChild(ta);
+ ta.addEventListener("focus",function(){ta.select();});
+}
+function renderData(a){
+ document.getElementById("hdrS").textContent="Send & backup";
+ a.appendChild(el('<h2 class="scr">Send & Backup</h2>'));
+ var dse=daysSinceExport();
+ if(!storageOK)a.appendChild(el('<div class="warn"><b>This device is refusing to save.</b> Export right now — do not close the app first.</div>'));
+ if(dse===null)a.appendChild(el('<div class="warn">You have never exported. Do it once now so you know the route works before you need it.</div>'));
+ else if(dse>=14)a.appendChild(el('<div class="warn">Last export was '+dse+' days ago. Send a backup.</div>'));
+ else a.appendChild(el('<div class="ok">Last export: '+dse+' day'+(dse===1?"":"s")+' ago. '+DB.sessions.length+' sessions stored.</div>'));
 
-/* ---------- ELBOW ---------- */
-function vid(url,label,chan){return '<div class="meta">▶ <a href="'+url+'" target="_blank" rel="noopener">'+label+'</a> · '+chan+'</div>';}
-function renderElbow(a){
- document.getElementById("hdrS").textContent="Elbow protocol";
- a.appendChild(el('<h2 class="scr">Elbow Protocol 🩹</h2>'));
- a.appendChild(el('<div class="note">Early lateral elbow tendinopathy (“tennis elbow”). The fix is load management + progressive loading — not rest alone. Golden rule for every exercise here: pain <b>≤3–4/10</b> during, and it must <b>settle within 24 h</b>. Worse the next morning → drop back a step. Tendons are slow — think 6–12 weeks.</div>'));
+ a.appendChild(el('<div class="mut">The <b>Share</b> buttons open the iPhone share sheet, so you can send straight to Mail, Messages or Files. Use these — a plain download often does nothing inside a home-screen app, which is why exports were failing.</div>'));
 
- a.appendChild(el('<div class="sec-h">Daily Rehab — do in order</div>'));
+ var s1=el('<button class="btn">📤 Share CSV (for the board)</button>');
+ s1.onclick=function(){sendFile("training_log_"+today()+".csv",buildCSV(),"text/csv");};a.appendChild(s1);
 
- a.appendChild(el('<div class="card"><div class="exn">1 · Isometric wrist extension</div><div class="tgt">5 × 30–45 s hold · rest 30–60 s · 2–3×/day</div><div class="meta">Forearm on table, palm DOWN, wrist off the edge, light DB (1–2 lb). Raise the wrist slightly above neutral and HOLD still — no movement. This one is a pain-reliever; start it today.</div>'+vid("https://www.youtube.com/watch?v=9B-c6lx5k9A","Watch demo","SPARC Physiotherapy")+'</div>'));
+ var s2=el('<button class="btn sec">📤 Share JSON backup (restores everything)</button>');
+ s2.onclick=function(){sendFile("training_backup_"+today()+".json",JSON.stringify(DB),"application/json");};a.appendChild(s2);
 
- a.appendChild(el('<div class="card"><div class="exn">2 · Wrist extensor stretch</div><div class="tgt">20–30 s × 3 · 2–3×/day · gentle</div><div class="meta">Arm straight out, elbow locked, palm DOWN. With the other hand, gently bend the wrist down and slightly toward the pinky until you feel a stretch along the TOP of the forearm. Never sharp. Do it after the loading work.</div>'+vid("https://health.clevelandclinic.org/tennis-elbow-exercises","Illustrated guide","Cleveland Clinic")+'</div>'));
+ var c=el('<button class="btn sec">📋 Copy summary as text</button>');
+ c.onclick=function(){
+  var t=buildText();markExported();
+  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(function(){alert("Copied — paste it into Mail or the chat.");},function(){showText(t);});
+  else showText(t);
+ };a.appendChild(c);
 
- a.appendChild(el('<div class="card"><div class="exn">3 · Eccentric wrist extension (dumbbell)</div><div class="tgt">3 × 15 · once daily · the healing driver</div><div class="meta">Same setup, light DB. Use your OTHER hand to lift the weight up into full wrist extension — then let go and <b>lower it slowly over 3–4 s</b> using only the injured side. The slow lowering is what remodels the tendon. Add small load once 3×15 is easy and pain-free.</div>'+vid("https://www.youtube.com/watch?v=0-VJoF6Y4dU","Watch demo","Evolve Physical Therapy")+'</div>'));
+ var v=el('<button class="btn ghost sm">Show as plain text</button>');v.onclick=function(){showText(buildText());};a.appendChild(v);
 
- a.appendChild(el('<div class="card"><div class="exn">4 · Tyler Twist (FlexBar)</div><div class="tgt">3 × 15 · once daily · strongest evidence</div><div class="meta">Needs a Thera-Band FlexBar (~$15–25; red = softest, start there). Hold it vertically in the injured hand, wrist cocked back; grab the top with the healthy hand. Twist to load it, bring arms out front (bar horizontal), then <b>slowly untwist over 3–4 s</b> by letting the injured wrist rotate into flexion.</div>'+vid("https://www.youtube.com/watch?v=we4UoiKG3Co","Watch demo","Jamie S. Dreyer")+'</div>'));
-
- a.appendChild(el('<div class="sec-h">Elbow-Sparing Day B — swaps</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Keep</b> — neutral-grip DB bench, landmine press, face pull (light grip). Pressing doesn’t provoke the tendon.<br><br><b style="color:var(--txt)">Modify</b> — go neutral / hammer grip on all rows, and use <b>lifting straps</b> so grip is never the limiter (this is the #1 change).<br><br><b style="color:var(--txt)">Pause</b> — straight-bar & reverse curls, heavy static gripping, and pronated (palm-down) rows/pulldowns. Reintroduce as it settles.</div>'));
- a.appendChild(el('<div class="card"><div class="exn">Lifting straps — how</div><div class="meta">Loop around wrist, wrap around the bar, roll the bar toward you to cinch. Takes grip off the injured tendon on rows and the trap-bar hinge.</div>'+vid("https://www.youtube.com/watch?v=BEkC01Mn1K0","Watch demo","Barbell Logic")+'</div>'));
-
- a.appendChild(el('<div class="sec-h">Counterforce strap</div>'));
- a.appendChild(el('<div class="card"><div class="meta">Wear it ~2 finger-widths BELOW the elbow crease, pad over the forearm muscle (not the bony bump). Snug, not tingly. A crutch for tennis & lifting — not the cure. Take it off the rest of the day.</div>'+vid("https://www.youtube.com/watch?v=QlHdYlITy-k","Placement demo","Dr Laina")+'</div>'));
-
- a.appendChild(el('<div class="note">See a physio / sports doc if: worse after ~2 weeks · night or rest pain · weakness / dropping things · numbness or tingling into the hand (that’s nerve, not tendon) · no better by 3–4 weeks. This screen is training guidance, not a diagnosis.</div>'));
+ a.appendChild(el('<div class="lbl">Restore from a JSON backup</div>'));
+ var imp=el('<input type="file" accept=".json,application/json" style="color:var(--mut);font-size:13px">');
+ imp.addEventListener("change",function(e){
+  var f=e.target.files[0];if(!f)return;var rd=new FileReader();
+  rd.onload=function(){
+   try{
+    var o=JSON.parse(rd.result);
+    if(!o||!o.sessions)return alert("That is not a valid backup file.");
+    var mode=confirm("MERGE with what is already on this phone?\n\nOK = merge (keeps both, skips duplicates)\nCancel = replace everything");
+    if(mode){
+     var have={};DB.sessions.forEach(function(s){have[s.id||(s.date+s.day+s.week)]=1;});
+     var added=0;
+     o.sessions.forEach(function(s){var k=s.id||(s.date+s.day+s.week);if(!have[k]){DB.sessions.push(s);added++;}});
+     DB.sessions.sort(function(x,y){return (x.date||"").localeCompare(y.date||"");});
+     save();alert("Merged. "+added+" sessions added.");
+    }else{
+     if(!confirm("Replace ALL data on this phone with the backup?"))return;
+     DB=o;DB.ver=2;save(true);alert("Restored.");
+    }
+    go("hist");
+   }catch(x){alert("Could not read that file.");}
+  };
+  rd.readAsText(f);
+ });
+ a.appendChild(imp);
 }
 
 /* ---------- INFO ---------- */
 function renderInfo(a){
  document.getElementById("hdrS").textContent="Guide";
  a.appendChild(el('<h2 class="scr">How to use</h2>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Install it like an app</b><br>Open this file in Safari, tap the Share icon, then <b>Add to Home Screen</b>. It then opens full-screen with its own icon and works offline at the gym.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Logging</b><br>Log tab → pick your week → pick the day. Type Load / Reps / RIR for your working sets (warm-ups optional). It shows what you did <b>last time</b> so you know what to beat, and estimates your 1RM. Everything saves automatically.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Rest timer</b><br>Tap the timer button below to run a rest countdown between sets.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Sending to the board</b><br>End of each block: Export tab → <b>Copy summary</b> and paste into chat (or download the CSV/JSON and upload). The JSON is also your backup.</div>'));
- a.appendChild(el('<div class="note">RIR = Reps In Reserve: how many clean reps you had left. Strength sets 1–2 RIR; hypertrophy 1–3 RIR (close to failure); power = stop while every rep is fast.</div>'));
+ a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Nothing can be lost now</b><br>A session is written to storage the moment you start it, and again every time you type a digit. "Mark complete" only tidies the History list. Anything left open for 18 hours closes itself automatically, so a forgotten session still shows up in your export.</div>'));
+ a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Coaching notes and video</b><br>Each exercise has two small buttons. <b>ⓘ Coaching notes</b> opens the board\'s cues for that movement — collapsed by default so the screen stays short between sets. <b>▶ Video</b> opens the demo you picked back in July — all 29 of your curated links are carried over. Exercises that are new this block show <b>▶ Find video</b> instead, which runs a YouTube search for that movement: a search can never go dead on you mid-session.</div>'));
+a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Every box belongs to its exercise</b><br>Pogo hops ask for reps only. Suitcase carry asks for load and distance. Side planks ask for load and seconds. Zone 2 asks for minutes and average heart rate. Jumps ask for distance or height. If a box does not make sense for the movement, that is a bug — tell the board.</div>'));
+ a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Sending your data</b><br>Send tab → <b>Share CSV</b>. The share sheet opens and you pick Mail, Messages or Save to Files. Use Share rather than a download — downloads often silently fail inside a home-screen web app.</div>'));
+ a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Install it like an app</b><br>Open the page in Safari → Share icon → <b>Add to Home Screen</b>. It then opens full-screen and works offline at the gym.</div>'));
+ a.appendChild(el('<div class="note">'+esc(LOADRULE)+'</div>'));
+ a.appendChild(el('<div class="note">RIR = reps in reserve. Strength 1–2 RIR · hypertrophy 1–3 RIR · power: stop while every rep is fast, no RIR.</div>'));
  var t=el('<button class="btn sec">Open rest timer</button>');t.onclick=tShow;a.appendChild(t);
+ var e=el('<button class="btn ghost sm">Storage check</button>');
+ e.onclick=function(){
+  try{localStorage.setItem("aa_test","1");localStorage.removeItem("aa_test");
+   alert("Storage is working.\n\nSessions: "+DB.sessions.length+"\nLast saved: "+(DB.updated||"—")+"\nLast export: "+(DB.lastExport||"never"));
+  }catch(x){alert("STORAGE IS BLOCKED on this device. Export your data now and check Safari's private-browsing / website-data settings.");}
+ };a.appendChild(e);
 }
 
 /* ---------- TIMER ---------- */
 var tLeft=120,tInt=null;
-function fmt(s){var m=Math.floor(s/60);var r=s%60;return m+":"+String(r).padStart(2,"0");}
+function fmt(s){var m=Math.floor(s/60),r=s%60;return m+":"+String(r).padStart(2,"0");}
 function tShow(){document.getElementById("tbar").classList.add("on");document.getElementById("tm").textContent=fmt(tLeft);}
 function tHide(){document.getElementById("tbar").classList.remove("on");tStop();}
 function tAdj(d){tLeft=Math.max(0,tLeft+d);document.getElementById("tm").textContent=fmt(tLeft);}
@@ -370,7 +684,11 @@ function tToggle(){if(tInt)tStop();else tStart();}
 function tStart(){document.getElementById("tBtn").textContent="Pause";tInt=setInterval(function(){tLeft--;if(tLeft<=0){tLeft=0;tStop();try{navigator.vibrate&&navigator.vibrate(400);}catch(e){}}document.getElementById("tm").textContent=fmt(tLeft);},1000);}
 function tStop(){if(tInt){clearInterval(tInt);tInt=null;}document.getElementById("tBtn").textContent="Start";if(tLeft<=0)tLeft=120;}
 
-var sel={week:null};
+/* save again whenever the app is backgrounded — iOS kills tabs aggressively */
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();});
+window.addEventListener("pagehide",save);
+
+boot();
 render();
 </script>
 </body>
