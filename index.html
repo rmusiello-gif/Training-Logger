@@ -85,7 +85,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-08-10-e";
+var BUILD="2026-08-10-f";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -130,7 +130,7 @@ var WEEKTIP={
 var LOADRULE="LOAD RULE — beat the top of the rep range by 2+ → add ~5% next time. Miss the bottom by 2+ → drop ~10%. Inside the range at target RIR → repeat the load. The rep range is the instruction; the load is what you move.";
 
 var PROGRAM={
- A:{name:"Day A — Lower: Power + Squat",short:"Lower: power + squat",items:[
+ A:{name:"Day A — Lower: Power + Squat",label:"Day A",short:"Lower: power + squat",items:[
   {s:"Prep",q:"ankle knee to wall and 90/90 hip mobility warm up",id:"a_prep",n:"Warm-up + ankle & hip mobility",f:["done"],tg:"10 min",cue:"Bike 3–4 min, ankle knee-to-wall 10/side, 90/90 hip switches, couch stretch 30s/side, deep squat hold, leg swings, 2 bodyweight squat sets."},
   {s:"Power / Test",q:"trap bar jump squat technique",v:"https://www.youtube.com/watch?v=rZGkx5PaZSM",id:"a_tbjump",n:"Trap-bar jump",f:["load","reps"],sets:4,tg:"4 × 3 · {L} lb",wk:[85,95,95,100,80],cue:"Explode, reset every rep. Stop the set the moment speed drops. No RIR here — never grind a jump."},
   {s:"Power / Test",q:"standing broad jump test how to measure",v:"https://www.youtube.com/watch?v=q7851uL2M8c",id:"a_broad",n:"Broad jump",f:["distin","reps"],sets:3,tg:"W1 & W5 TEST · then 3 × 3",cue:"Test weeks: fully warmed up, 3 max attempts, measure heel-to-heel, log the BEST distance. Other weeks: log distance of the best jump in each set, submaximal."},
@@ -145,7 +145,7 @@ var PROGRAM={
   {s:"Core",q:"pallof press anti rotation proper technique",id:"a_pallof",n:"Pallof press · 3-sec pause",f:["pin","rside"],sets:3,tg:"3 × 10 /side · log the pin",cue:"Anti-rotation — the exact core quality tennis loads. Log the stack pin number so progression is a number, not a feeling."}
  ]},
 
- B:{name:"Day B — Upper: Push / Pull (shoulder-safe)",short:"Upper: push / pull",items:[
+ B:{name:"Day B — Upper: Push / Pull (shoulder-safe)",label:"Day B",short:"Upper: push / pull",items:[
   {s:"Prep",q:"shoulder CARs band pull apart scapular warm up",id:"b_prep",n:"Shoulder prep + T-spine & lat mobility",f:["done"],tg:"10 min",cue:"Shoulder CARs, band pull-aparts, scap work. THEN the screen work: bench lat stretch 3×30s, foam-roller T-spine extension 8–10, doorway pec stretch 2×30s/side, prone Y-raise 2×10."},
   {s:"Power",q:"rotational medicine ball throw against wall technique",id:"b_mb",n:"Rotational med-ball throw (wall)",f:["ball","rside"],sets:3,tg:"3 × 4 /side · light ball, max intent",cue:"Fast hips, not arm. The one power movement that transfers straight to your tennis swing."},
   {s:"Strength",q:"neutral grip dumbbell bench press form",v:"https://www.youtube.com/watch?v=315SmTiVJAU",id:"b_bench",n:"Neutral-grip DB bench press",f:["loadh","reps","rir"],sets:4,tg:"4 × 6 (W3–4: 4 × 5) · {L} lb/hand",wk:[80,85,90,95,75],cue:"ESTIMATED — no Day B data since 12 Jul. Expect W1 to feel easy; if you beat the top of the range by 2+, jump 5–10%, not 5%."},
@@ -160,7 +160,7 @@ var PROGRAM={
   {s:"Carry / Core",q:"weighted side plank proper form",v:"https://www.youtube.com/watch?v=iNbH7_edNI8",id:"b_sp",n:"Side plank (weighted from W3)",f:["load","sec"],sets:2,tg:"2 × 30–45 s /side · {L}",wk:["BW","BW",10,15,"BW"],cue:"LOG LOAD AND SECONDS — no reps. Plate on the hip from W3. Anti-lateral-flexion under load. Breathe through it."}
  ]},
 
- C:{name:"Day C — Total Body + Hinge + Aerobic",short:"Total body + hinge",items:[
+ C:{name:"Day C — Total Body + Hinge + Aerobic",label:"Day C",short:"Total body + hinge",items:[
   {s:"Prep / Agility",q:"dynamic full body warm up before lifting",id:"c_prep",n:"Full-body warm-up",f:["done"],tg:"8 min",cue:"Easy bike or row, then dynamic hips, ankles, shoulders."},
   {s:"Prep / Agility",q:"drop step crossover backpedal agility footwork drill",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"c_agil",n:"Agility pattern circuit",f:["rounds","done"],sets:1,tg:"3 rounds · 12–15 min · morning",cue:"Backpedal 5m → drop-step → sprint 5m ×4 · lateral shuffle 8m ×2 each way · crossover 6m ×2 each way · carioca 8m ×2 each way. W3–4: make 4 drop-step reps random-direction. NEVER at 6:30pm."},
   {s:"Prep / Agility",q:"pogo hops technique ankle stiffness",v:"https://www.youtube.com/watch?v=j0nl5dWuqN4",id:"c_pogo",n:"Pogo hops / jump rope",f:["reps"],sets:3,tg:"3 × 20 · bodyweight",cue:"Bodyweight — REPS ONLY, no load, no RIR. Land tall, quiet, springy. Gastrocnemius and Achilles stiffness."},
@@ -175,14 +175,14 @@ var PROGRAM={
   {s:"Aerobic",q:"zone 2 training how it should feel nose breathing",id:"c_z2",n:"Zone 2 finisher (bike)",f:["min","hr"],sets:1,tg:"30 min (W5: 25) · 112–125 bpm",cue:"LOG MINUTES AND AVERAGE HR. Nose-breathing, conversational. Zone 2 is a ceiling, not a target — aim 115–125."}
  ]},
 
- T:{name:"Tuesday — Footwork + Zone 2",short:"Footwork + Zone 2",items:[
+ T:{name:"Tuesday — Footwork + Zone 2",label:"Tuesday",short:"footwork + Zone 2",items:[
   {s:"Skill",q:"drop step and crossover footwork drill tennis",v:"https://www.youtube.com/watch?v=b5qhkvu11Fw",id:"t_foot",n:"Footwork skill block",f:["rounds","done"],sets:1,tg:"10 min · technique speed",cue:"Drop-step and run 6/side · crossover 6/side · lateral shuffle 4×8m each way · backpedal-plant-forward 4× · carioca 4×8m each way. ~60–70% speed. If you are breathing hard you are doing it wrong. Morning, un-sedated."},
   {s:"Aerobic",q:"zone 2 cycling indoor how it should feel",id:"t_z2",n:"Zone 2 bike",f:["min","hr"],sets:1,tg:"W1 35 · W2–3 40 · W4 45 · W5 30 min",cue:"LOG MINUTES AND AVERAGE HR. 112–131 is the band; aim 115–125. Nose-breathing and full sentences."},
   {s:"Aerobic",q:"sub maximal intervals cycling repeats RPE",id:"t_rep",n:"Sub-maximal Repeats (from W2)",f:["ivals","sec","rpe"],sets:1,tg:"W2 6 · W3 8 · W4 10 × 45 sec @ RPE 6–7",cue:"Log HOW MANY intervals, the length of each in seconds, and your RPE. ~140–150 bpm. 2–3 min easy spinning between. At the END of the session. None in W1 or W5."},
   {s:"Recovery",q:"cool down spin after training why",id:"t_cool",n:"Cool-down spin",f:["min","done"],sets:1,tg:"5 min minimum",cue:"Never stop a hard effort dead. Standing cardiology rule — applies to tennis too."}
  ]},
 
- X:{name:"Cardio / Agility / Tennis",short:"Zone 2, agility, tennis, tests",items:[
+ X:{name:"Cardio / Agility / Tennis",label:"Cardio / Agility / Tennis",short:"Mon, Wed & tennis days",items:[
   {s:"Sport",q:"beach tennis footwork and movement",id:"x_tennis",n:"Beach tennis",f:["min","hr"],sets:1,tg:"~90 min · Mon & Wed 6:30pm",cue:"Log duration and average HR from WHOOP. If light-headedness happens, tick the box at the bottom of this session — that is real data the board needs."},
   {s:"Sport",q:"tennis footwork warm up drills before match",id:"x_primer",n:"Pre-tennis sand primer (from W2)",f:["done"],tg:"5 min · before the match",cue:"6 × drop-step and run 4 m each side · 4 × lateral shuffle 6 m each way · 4 × backpedal-plant-forward. TECHNIQUE SPEED ONLY — you are at peak clonazepam. Your only sand exposure for the pattern."},
   {s:"Aerobic",q:"zone 2 stationary bike session",id:"x_z2",n:"Zone 2 session (bike / walk)",f:["min","hr"],sets:1,tg:"Week 1 Mon 45 min · Wed 30 min",cue:"LOG MINUTES AND AVERAGE HR. Cool room, fan on. Electrolyte packet if you sweat hard. Five-minute spin-down."},
@@ -378,7 +378,7 @@ function renderLog(a){
  var done=DB.sessions.filter(function(s){return s.status==="done";});
  if(done.length)a.appendChild(el('<div class="mut" style="margin-top:14px">'+done.length+' completed sessions stored · last: '+esc(done[done.length-1].date)+'</div>'));
 }
-function dayLabel(k){return k==="T"?"Tuesday":(k==="X"?"Tennis / Cardio":"Day "+k);}
+function dayLabel(k){return PROGRAM[k]&&PROGRAM[k].label?PROGRAM[k].label:(PROGRAM[k]?PROGRAM[k].name:k);}
 
 function startSession(day,week){
  var s={id:uid(),date:today(),day:day,week:week,block:2,entries:{},note:"",dizzy:false,status:"open",started:nowISO(),updated:nowISO()};
