@@ -87,7 +87,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-10-06";
+var BUILD="2026-10-06-b";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -447,6 +447,10 @@ function renderSession(a,s){
   if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
   a.appendChild(exCard(it,s));
  });
+ // Retired exercises that hold data in THIS session stay visible and editable (added 2026-10-06-b).
+ var curIds={};PROGRAM[s.day].items.forEach(function(x){curIds[x.id]=1;});
+ var retiredHere=Object.keys(s.entries||{}).filter(function(id){if(curIds[id]||!RETIRED[id])return false;var e=s.entries[id];return (e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});})||e.done||e.txt;});
+ if(retiredHere.length){a.appendChild(el('<div class="sec-h">Retired exercises \u2014 logged in this session</div>'));retiredHere.forEach(function(id){a.appendChild(exCard(RETIRED[id],s));});}
  // session-level extras
  var dt=el('<div class="card"><div class="exn">Session date</div><input type="date" value="'+esc(s.date)+'"><div class="cue">This stamps when you TAP the day, and updates again when you mark the session complete. If you opened it on one day and trained on another, fix it here \u2014 Block 2 exports carried two wrong dates because of this.</div></div>');
  dt.querySelector("input").addEventListener("change",function(e){if(e.target.value){s.date=e.target.value;s.updated=nowISO();save();document.getElementById("hdrS").textContent=dayLabel(s.day)+" \u00b7 Week "+s.week+" \u00b7 "+s.date;}});
