@@ -11,7 +11,10 @@
 :root{--navy:#1F3864;--blue:#2E75B6;--bg:#0f141b;--card:#1a212c;--card2:#222b39;--line:#2f3a4a;--txt:#e8edf4;--mut:#93a1b3;--gold:#e0a800;--good:#3ea76a;--bad:#e05a4a;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;}
-body{padding-bottom:90px;}
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0));}
+body.timer-on{padding-bottom:calc(160px + env(safe-area-inset-bottom,0));}
+/* 2026-11-08: hide both bottom bars while typing, so the iPhone keyboard cannot drag them over the input */
+body.typing .tabbar,body.typing .timerbar{display:none !important;}
 header{position:sticky;top:0;z-index:20;background:linear-gradient(180deg,#1F3864,#16223a);padding:14px 16px 12px;padding-top:calc(14px + env(safe-area-inset-top,0));box-shadow:0 2px 10px rgba(0,0,0,.4);}
 header .t{font-size:19px;font-weight:800;letter-spacing:.2px;}
 header .s{font-size:12px;color:#b9c6da;margin-top:2px;}
@@ -87,7 +90,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-10-06-b";
+var BUILD="2026-11-08";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -785,12 +788,45 @@ var t=el('<button class="btn sec">Open rest timer</button>');t.onclick=tShow;a.a
 /* ---------- TIMER ---------- */
 var tLeft=120,tInt=null;
 function fmt(s){var m=Math.floor(s/60),r=s%60;return m+":"+String(r).padStart(2,"0");}
-function tShow(){document.getElementById("tbar").classList.add("on");document.getElementById("tm").textContent=fmt(tLeft);}
-function tHide(){document.getElementById("tbar").classList.remove("on");tStop();}
+function tShow(){document.getElementById("tbar").classList.add("on");document.body.classList.add("timer-on");document.getElementById("tm").textContent=fmt(tLeft);}
+function tHide(){document.getElementById("tbar").classList.remove("on");document.body.classList.remove("timer-on");tStop();}
 function tAdj(d){tLeft=Math.max(0,tLeft+d);document.getElementById("tm").textContent=fmt(tLeft);}
 function tToggle(){if(tInt)tStop();else tStart();}
 function tStart(){document.getElementById("tBtn").textContent="Pause";tInt=setInterval(function(){tLeft--;if(tLeft<=0){tLeft=0;tStop();try{navigator.vibrate&&navigator.vibrate(400);}catch(e){}}document.getElementById("tm").textContent=fmt(tLeft);},1000);}
 function tStop(){if(tInt){clearInterval(tInt);tInt=null;}document.getElementById("tBtn").textContent="Start";if(tLeft<=0)tLeft=120;}
+
+/* ---------- KEYBOARD GUARD (2026-11-08) ----------
+   iOS Safari moves position:fixed bars up with the on-screen keyboard and can leave them
+   stuck mid-screen, covering the field being typed in. While any field has focus, both
+   bars are hidden (the rest timer keeps counting underneath); the focused field is scrolled
+   to the middle of the visible area; on leaving the field, a forced re-layout puts the bars
+   back at the true bottom. */
+(function(){
+ function isField(t){return t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.tagName==="SELECT");}
+ var hideT=null;
+ document.addEventListener("focusin",function(e){
+  if(!isField(e.target))return;
+  if(hideT){clearTimeout(hideT);hideT=null;}
+  document.body.classList.add("typing");
+  var t=e.target;
+  setTimeout(function(){try{t.scrollIntoView({block:"center",behavior:"smooth"});}catch(x){}},350);
+ });
+ document.addEventListener("focusout",function(e){
+  if(!isField(e.target))return;
+  hideT=setTimeout(function(){
+   if(isField(document.activeElement))return;   /* moved to the next field: stay hidden */
+   document.body.classList.remove("typing");
+   window.scrollTo(window.scrollX,window.scrollY); /* forces iOS to re-place fixed bars */
+  },150);
+ });
+ /* belt and braces: if the keyboard is closed but a bar was left floating, snap it back */
+ if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",function(){
+   var kb=window.innerHeight-window.visualViewport.height>120;
+   if(!kb&&!isField(document.activeElement)){document.body.classList.remove("typing");}
+  });
+ }
+})();
 
 /* save again whenever the app is backgrounded — iOS kills tabs aggressively */
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();});
