@@ -6,7 +6,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1F3864">
-<title>Athletic Aging — Logger</title>
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Training Logger</title>
 <style>
 :root{--navy:#1F3864;--blue:#2E75B6;--bg:#0f141b;--card:#1a212c;--card2:#222b39;--line:#2f3a4a;--txt:#e8edf4;--mut:#93a1b3;--gold:#e0a800;--good:#3ea76a;--bad:#e05a4a;}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
@@ -60,7 +61,7 @@ textarea{width:100%;background:#0e141d;border:1px solid var(--line);border-radiu
 .hist .d{font-weight:800;}
 .hist .m{font-size:12px;color:var(--mut);margin-top:3px;}
 .badge{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;background:var(--gold);color:#20180a;margin-left:6px;vertical-align:1px;}
-.timerbar{position:fixed;left:0;right:0;bottom:64px;background:#141c28;border-top:1px solid var(--line);padding:8px 12px;display:none;align-items:center;gap:10px;z-index:25;}
+.timerbar{position:fixed;left:0;right:0;bottom:calc(64px + env(safe-area-inset-bottom,0));background:#141c28;border-top:1px solid var(--line);padding:8px 12px;display:none;align-items:center;gap:10px;z-index:25;}
 .timerbar.on{display:flex;}
 .timerbar .tm{font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;min-width:64px;}
 .timerbar button{background:var(--card2);border:1px solid var(--line);color:#fff;border-radius:9px;padding:8px 12px;font-weight:700;font-size:13px;}
@@ -72,10 +73,21 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 .savedot{font-size:11px;color:var(--good);margin-top:3px;}
 #updbar{position:fixed;left:0;right:0;top:0;z-index:60;background:var(--gold);color:#20180a;font-weight:800;font-size:14px;padding:14px;text-align:center;display:none;cursor:pointer;}
 #updbar.on{display:block;}
+.okset{flex:0 0 34px;width:34px;background:transparent;border:1px solid var(--good);color:var(--good);border-radius:10px;font-size:16px;line-height:1;padding:10px 0;cursor:pointer;font-family:inherit;}
+.okset:active{background:var(--good);color:#fff;}
+.setrow input::placeholder{color:#5d6b7e;}
+.upnext{background:linear-gradient(135deg,#1F3864,#2E75B6);border-radius:16px;padding:16px;margin:6px 0 12px;}
+.upnext .k{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:#cfe0f5;font-weight:800;}
+.upnext .d{font-size:21px;font-weight:800;margin:4px 0 2px;}
+.upnext .m{font-size:13px;color:#dbe7f6;}
+.wkrow{display:flex;gap:8px;margin:10px 0 2px;}
+.wkrow div{flex:1;text-align:center;padding:9px 4px;border-radius:10px;background:var(--card);border:1px solid var(--line);font-size:13px;font-weight:700;color:var(--mut);}
+.wkrow div.ok{background:rgba(62,167,106,.18);border-color:var(--good);color:#cfe9da;}
+.timerbar.ring{background:#3a2a05;border-top-color:var(--gold);}
 </style>
 </head>
 <body>
-<header><div class="t" id="hdrT">Athletic Aging — Logger</div><div class="s" id="hdrS">Block 2 · tap Log to begin</div><div class="savedot" id="buildTag" style="color:#93a1b3"></div><div class="savedot" id="saveDot"></div></header>
+<header><div class="t" id="hdrT">Training Logger</div><div class="s" id="hdrS">Block 4 · tap Log to begin</div><div class="savedot" id="buildTag" style="color:#93a1b3"></div><div class="savedot" id="saveDot"></div></header>
 <div id="updbar" onclick="doUpdate()">A newer version is available — tap here to load it</div>
 <div class="wrap" id="app"></div>
 
@@ -90,7 +102,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-11-08";
+var BUILD="2026-11-16";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -115,85 +127,31 @@ var FT={
  rpe   :{cap:"RPE",       ph:"rpe"},
  watts :{cap:"Avg watts", ph:"watts"},
  rounds:{cap:"Rounds",    ph:"rounds"},
- ivals :{cap:"Intervals", ph:"how many"}
+ ivals :{cap:"Intervals", ph:"how many"},
+ lval  :{cap:"Left",      ph:"left"},
+ rval  :{cap:"Right",     ph:"right"}
 };
 /* field keys that mean "a load" for est-1RM purposes */
 var LOADK=["load","loadh"];
 
 /* =========================================================
-   PROGRAM — Block 3 v1
-   f: array of field keys. wk: load hint per week [W1..W5].
+   PROGRAM — Block 4 v1 (generated from block4.py, 2026-11-16)
+   f: field keys. wk: load per week [W1..W4]; "+5%" etc. is computed from your last log.
+   rp: target reps (placeholder). rir: target RIR per week. rest: seconds for the rest timer.
    ========================================================= */
-var BLOCK="Block 3";
+var BLOCKNUM=4;
+var BLOCK="Block 4";
 var NWEEKS=4;
-var WEEKTIP={
- 1:"W1 STARTS MON 2026-10-05 (RESTARTED \u2014 see the Restart Addendum). Sep 21 \u2013 Oct 4 were illness and recovery, not training: no tests ran and nothing was missed. Block now ends Sun 2026-11-01; W4 retest week = Oct 26 \u2013 Nov 1, inside the DEXA window. \u2014\u2014\u2014 W1 \u2014 RE-ENTRY + ALL FOUR TESTS. Loads ~90% of Block 2\u2019s top. Front squat and trap bar run at 3 RIR this week only. THIS WEEK ONLY: Thursday\u2019s Day A is your first lower session in ~2.5 weeks \u2014 run every lift at ~85% of the W1 numbers shown and stop EVERY set at 3 RIR, including the primary. Day C Saturday as written. Tests: broad jump + vertical (Day A) \u00b7 CoD (any day, REVISED protocol) \u00b7 Biering-S\u00f8rensen LAST on Day C. Thursday-after-Wednesday-tennis is the standard week, so W4 conditions will match; defer the Day A jumps to next Thursday ONLY if your legs are clearly heavier than a normal post-tennis day, and write that in the session note. Log one rep of every mobility and agility item. THIS WEEK: Mon Day B (done) \u00b7 Wed tennis \u00b7 Thu Day A \u00b7 Sat Day C. FROM W2: Mon tennis \u00b7 Tue Day B \u00b7 Wed tennis \u00b7 Thu Day A \u00b7 Fri OPTIONAL \u00b7 Sat Day C \u00b7 Sun rest.",
- 2:"W2 — BUILD. First real working loads. THE RIR RULE STARTS: one lift a day at 1–2 RIR, everything else at 3. Reactive element enters the Day C agility circuit. Sand primer live before Mon/Wed tennis.",
- 3:"W3 — PEAK. Hardest week. Top loads, lowest RIR — on the PRIMARY lift only. Agility ~85–90%, never max. Your hardest week follows your easiest, not your previous-hardest.",
- 4:"W4 — DELOAD + RETEST. ~60–65% loads, about half the sets. RETEST ALL FOUR NUMBERS with the identical protocols from W1 — same app, same surface, same shoes, same convention. This retest is the payoff of the whole block; Block 2 never reached its own and lost five weeks of data."
-};
-var LOADRULE="LOAD RULE — beat the top of the rep range by 2+ → add ~5% next time. Miss the bottom by 2+ → drop ~10%. Inside the range at target RIR → repeat the load. The rep range is the instruction; the load is what you move.";
-var RIRRULE="RIR RULE — the day’s FIRST strength lift goes to 1–2 RIR. Everything else lives at 3 RIR. WEEK 1 IS THE EXCEPTION: the front squat and trap bar run at 3 RIR while you re-find the patterns. The rule starts in week 2. Ten exercises at 1–2 RIR is what fries a block.";
-var PAIRRULE="PAIR RULE (v2.4) — anything labelled A1/A2, B1/B2, C1/C2 is a SUPERSET: A1 → 30–45 sec → A2 → 60–75 sec → back to A1, three rounds. Never pair the jumps, the med-ball throw, the deceleration block, the front squat or the trap bar — those take full rest.";
+var ORDER=["B","A","C"];
+var WEEKTIP={"1": "W1 (Nov 23–29) — RE-ENTRY + TESTS. Every lift at 3 RIR. Tue: left/right screen replaces Pair C. Sat: change-of-direction baseline replaces agility round 3, and the back-extension hold goes last. Learn the Copenhagen and Cossack.", "2": "W2 (Nov 30 – Dec 6) — BUILD. One lift a day at 1–2 RIR (marked ★); everything else at 2. Random-beep drop-steps start in the agility circuit.", "3": "W3 (Dec 7–13) — PEAK. Top loads. The ★ lift at 1–2 RIR, the rest at 2. Agility at 85–90%, never max. Loaded trunk work stays at 2+ RIR.", "4": "W4 (Dec 14–20) — DELOAD + RETEST. ~60–65% loads, about half the sets, 4 RIR. Thu: broad jump + vertical (same app). Sat: change of direction + back-extension hold. Then Block 5 (leg strength) starts Mon Dec 21."};
+var LOADRULE="LOAD RULE \u2014 beat the top of the rep range by 2+ \u2192 add ~5% next time. Miss the bottom by 2+ \u2192 drop ~10%. Inside the range at the target RIR \u2192 repeat the load. Grey numbers in each row are this week\u2019s target: tap \u2713 to log the set exactly as shown, or type what you actually did.";
+var RIRRULE="RIR RULE \u2014 one lift a day (marked \u2605) goes to 1\u20132 RIR from week 2. Everything else at 2\u20133. Week 1 is 3 RIR on everything; week 4 is 4 RIR. Loaded trunk work never below 2 RIR, and exhale every rep.";
+var PAIRRULE="PAIR RULE \u2014 A1/A2, B1/B2, C1/C2 are supersets: A1 \u2192 ~40 s \u2192 A2 \u2192 ~70 s \u2192 back to A1. Never pair the jumps, the med-ball throw, the front squat or the trap bar \u2014 full rest. Tap \u23f1 on any exercise for its rest timer.";
 
-var PROGRAM={
- A:{name:"Day A — Lower: Power + Squat",label:"Day A",short:"Lower: power + squat · ~62 min",items:[
-  {s:"Prep",q:"ankle knee to wall and 90/90 hip mobility warm up",id:"a_prep",n:"Warm-up + ankle & hip mobility",f:["done"],tg:"10 min",cue:"Bike 3–4 min · ankle knee-to-wall 10/side · 90/90 hip switches · couch stretch 30 s/side · deep squat hold 30 s · heel-raised BIG-TOE ISOMETRIC 2 × 20 s · two bodyweight squat sets."},
-  {s:"Prep",q:"tennis split step drill react first step",id:"a_split",n:"Split step → react ★ NEW",f:["rounds","done"],sets:1,tg:"3 min · 8–10 reps",cue:"THE MISSING LINK, and you asked for it. Small hop to a balanced athletic landing on the balls of the feet, then break on a cue — vary the direction, use a partner or a random phone beep where you can. This is the ready position every reaction in the game starts from and it was not in the program at all. Technique speed, fresh, un-sedated."},
-  {s:"Power / Test — full rest, never paired",q:"trap bar jump squat technique",id:"a_tbjump",n:"Trap-bar jump",f:["load","reps"],sets:3,tg:"3 × 3 · {L} lb TOTAL",wk:[95,100,105,85,""],cue:"Explode, reset every rep, stop the set the moment speed drops. Never grind a jump. Bilateral vertical power is the most sport-specific thing in this session — sand is soft and gives nothing back."},
-  {s:"Power / Test — full rest, never paired",q:"standing broad jump test technique",id:"a_broad",n:"Broad jump (TEST WEEKS ONLY)",f:["distin"],sets:3,tg:"W1 & W4 ONLY · 3 max attempts",cue:"PROTOCOL PINNED. Fully warmed up. 3 max attempts, stick the landing, measure TOE TO TOE from the line, log the best. Your reference is 93 in from 2026-08-17 measured the same way. The submaximal 3 × 3 version is gone — it produced numbers nobody could interpret."},
-  {s:"Power / Test — full rest, never paired",q:"vertical jump countermovement test",id:"a_vert",n:"Vertical jump (TEST WEEKS ONLY)",f:["hgtin"],sets:1,tg:"W1 & W4 ONLY · 3 attempts",cue:"SAME APP, same phone, same surface, same shoes, same time of day. Absolute agreement between methods is only 0.665 — switching instruments would fabricate a result bigger than any real four-week change. Write the app name in the session note. Reference: 20 in / 51 cm."},
-  {s:"Power / Test — full rest, never paired",q:"deceleration landing drill lateral bound stick",id:"a_decel",n:"Deceleration & landing block",f:["rounds","done"],sets:1,tg:"7 min",cue:"Snapdown to stick 3 × 4 · lateral bound to stick 3 × 3/side · LATERAL HURDLE HOP → SINGLE-LEG STICK 2 × 3/side (NEW, unloaded all block) · drop-step retreat → accelerate 3 × 4. STOPPING RULE IS NOISE: if landings get loud or you cannot hold the stick 2 seconds, the set is finished."},
-  {s:"Strength — full rest · the 1–2 RIR lift",q:"front squat form cues",id:"a_fsq",n:"Front squat",f:["load","reps","rir"],sets:4,tg:"4 × 5 · {L} lb",wk:[140,152,162,115,""],cue:"THE ONE LIFT ON DAY A THAT GOES NEAR FAILURE. Deep, chest tall, cross-arm grip. W1 runs at 3 RIR while you re-find the pattern, then 1–2 RIR from W2. Block 2 took you 120 → 155 at a settled 2 RIR — an estimated 1RM near 188, roughly +9% on the block."},
-  {s:"Pair A1 + A2 — superset",q:"bulgarian split squat dumbbell one hand balance",id:"a_bss",n:"A1 — Bulgarian split squat (DB one hand + stick)",f:["load","rleg","rir"],sets:3,tg:"3 × 8 → 3 × 6 /leg · {L} lb ONE DUMBBELL",wk:[50,60,70,40,""],cue:"YOUR VERSION, and it is the better one. Dumbbell in the hand OPPOSITE the working front leg — same side every time so loads stay comparable. Other hand on a stick or rack upright. THE STICK IS BALANCE, NOT ASSISTANCE: fingertip contact. If you are pulling on it the load number is lying. Contralateral loading also adds frontal-plane trunk work for free."},
-  {s:"Pair A1 + A2 — superset",q:"seated leg curl machine form",id:"a_ham",n:"A2 — SEATED leg curl (seated only)",f:["load","reps","rir"],sets:3,tg:"3 × 10–12 · {L} lb",wk:["FIND","+5%","+5%","-35%",""],cue:"SEATED, AND ONLY SEATED — pick one machine and stay on it. Hip flexed to 90° holds the hamstring at long muscle length the whole way; Maeo 2021 found substantially more growth seated than lying. It also matches how the hamstring works decelerating on sand. Your Block 2 loads came off whichever machine was free, so W1 finds the number."},
-  {s:"Pair B1 + B2 — superset",q:"seated calf raise soleus",id:"a_scr",n:"B1 — Seated (bent-knee) calf raise",f:["load","reps","rir"],sets:3,tg:"3 × 12 · {L} lb",wk:[55,60,65,45,""],cue:"SOLEUS. 55 and 60 are your real numbers — the 150/190/210 in the Block 2 log were standing calf raises entered in this slot, which means the soleus got no direct work until week 3. Two-second pause at the bottom stretch, full range."},
-  {s:"Pair B1 + B2 — superset",q:"pallof press anti rotation core",id:"a_pallof",n:"B2 — Pallof press · 3-sec pause",f:["pin","rside"],sets:3,tg:"3 × 10 /side · log the pin",wk:["log","+1","+1","W1",""],cue:"MOVE THE PIN. It sat at 15 for four straight weeks while the load rule went unapplied. Exhale through every rep, no breath holding until the stress test is done."}
- ]},
-
- B:{name:"Day B — Upper: Push / Pull",label:"Day B",short:"Upper, shoulder-safe · ~63 min",items:[
-  {s:"Prep",q:"shoulder warm up band pull apart face pull scapular",id:"b_prep",n:"Shoulder prep + face pulls + T-spine & lat mobility",f:["done"],tg:"11 min",cue:"Shoulder CARs · band pull-aparts · scap work · face pull 2 × 15. Then the screen-targeted work: bench lat stretch 3 × 30 s · thoracic extension over a roller 8–10 · doorway pec stretch 2 × 30 s/side · prone Y-raise 2 × 10. Shoulder flexion + T-spine extension + lat length is the exact trio that failed at squat depth on your film."},
-  {s:"Power — full rest, never paired",q:"rotational medicine ball throw wall",id:"b_mb",n:"Rotational med-ball throw (wall)",f:["ball","rside"],sets:3,tg:"3 × 4 /side · {L} lb ball",wk:[8,8,10,8,""],cue:"Fast hips, not arm. Confirmed max intent — keep it there. The one power movement that transfers directly to your swing. Ball goes to 10 lb in W3 only if W2 is still visibly fast."},
-  {s:"Strength — full rest · the 1–2 RIR lift",q:"neutral grip machine chest press form",id:"b_mpress",n:"Machine chest press — NEUTRAL grip",f:["load","reps","rir"],sets:4,tg:"4 × 6 · {L} lb on the machine",wk:["FIND","+5%","+5%","-30%",""],cue:"REPLACES THE DB BENCH (2026-10-06). The regular-grip DB bench and the incline DB both produced a pinch at the front of the right shoulder on Oct 5; this machine with neutral handles did not. Neutral grip + a fixed path that cannot sink into deep extension = the original labrum accommodation, restored. W1 = FIND: pick a load you would finish with ~3 reps left and log it. From W2 this is the day\u2019s 1\u20132 RIR lift and the load rule takes over. Same machine every time, same seat height \u2014 write the seat setting in the session note once. Machine numbers do not convert from dumbbells; do not try."},
-  {s:"Pair A1 + A2 — superset",q:"assisted pull up machine form",id:"b_pull",n:"A1 — Assisted pull-up",f:["assist","reps","rir"],sets:4,tg:"4 × 6 · {L} lb ASSIST",wk:[55,50,47.5,60,""],cue:"TARGET RESET. Unassisted by the end of Block 3 needed roughly +13% in one block and was never realistic — repeating an unreachable target is not a plan. The new target is the assist number: 55 → 47.5 by W3, under 40 by the end of Block 4. W4 add three bodyweight negatives with a five-second lowering."},
-  {s:"Pair A1 + A2 — superset",q:"two handed landmine press standing",id:"b_lm",n:"A2 — Landmine press, TWO-HANDED",f:["load","reps","rir"],sets:3,tg:"3 × 8–10 · {L} lb TOTAL on the bar",wk:["FIND","+5%","+5%","-30%",""],cue:"NOW TWO-HANDED — both hands cupping the end of the bar, press from the chest up and forward. Same angled labrum-safe path, half the executions. Start W1 around your Block 2 single-arm load of 90 and apply the load rule aggressively: two hands should move more than one. Ribs down, do not overarch, never press straight overhead."},
-  {s:"Pair B1 + B2 — superset",q:"chest supported t bar row neutral grip",id:"b_row",n:"B1 — Chest-supported T-bar row",f:["load","reps","rir"],sets:3,tg:"3 × 10 · {L} lb TOTAL",wk:[55,60,65,45,""],cue:"Neutral / parallel handle only — elbow rule. Straps if grip fades first. Your W4 sat at 55 after you had hit 65 because you were protecting your upper back that session; that tweak resolved, so start at 55 and let the load rule take you back past 65."},
-  {s:"Pair B1 + B2 — superset",q:"incline chest press machine neutral grip",id:"b_minc",n:"B2 — Incline press, NEUTRAL grip (machine first)",f:["load","reps","rir"],sets:2,tg:"2 × 12 · {L} lb",wk:["FIND","+5%","+5%","-30%",""],cue:"REPLACES THE INCLINE DB (2026-10-06). FIRST CHOICE: an incline machine with neutral handles \u2014 log the machine load. IF YOUR GYM HAS NONE: low-incline DB (15\u201330\u00b0) with a NEUTRAL grip, start ~35 lb per hand, first set is a test \u2014 log PER HAND and write \u2018DB\u2019 in the session note so the numbers are never mixed. ANY front-of-shoulder pinch \u2192 stop and do 2 \u00d7 12 on the flat machine chest press instead."},
-  {s:"Pair C1 + C2 — superset",q:"hammer curl neutral grip",id:"b_hammer",n:"C1 — Hammer curl (neutral)",f:["loadh","reps","rir"],sets:2,tg:"2 × 12 · {L} lb PER HAND",wk:[27.5,30,30,25,""],cue:"PER HAND. It sat at 25 for four straight weeks while the reps climbed past the range — that is the load rule going unapplied. Neutral, and it stays neutral."},
-  {s:"Pair C1 + C2 — superset",q:"overhead dumbbell triceps extension",id:"b_ohtri",n:"C2 — Overhead DB triceps extension",f:["load","reps","rir"],sets:2,tg:"2 × 12 · {L} lb TOTAL",wk:[45,50,50,35,""],cue:"TOTAL load on one dumbbell held in both hands. Take these to 3 RIR."},
-  {s:"Carry",q:"farmers carry both hands grip",id:"b_carry",n:"Farmer's carry — BILATERAL",f:["loadh","distm"],sets:2,tg:"2 × 40 m · {L} lb PER HAND",wk:[60,65,70,55,""],cue:"NOW BILATERAL — both hands, no straps. The grip is the point and it maps straight to the Decathlon target of carrying your own luggage. LOG LOAD AND DISTANCE, there are no reps. Anti-lateral-flexion now comes free from the contralateral Bulgarian, so the suitcase version is retired. 70 lb per hand is a ceiling, not an obligation."},
-  {s:"Aerobic",q:"zone 2 cycling power watts training",id:"b_z2",n:"Zone 2 bike — after the session",f:["min","watts","hr"],sets:1,tg:"W1–2 30 · W3 35 · W4 25 min",cue:"RUN THIS ON WATTS, NOT HEART RATE. Minoxidil raised your resting HR by about 4.5 bpm, so the old HR ceiling under-doses you. W1: find the wattage you can hold for 30 min while nose-breathing and speaking full sentences — that number is your Zone 2 and it is drug-invariant. Then hold it and watch HR DRIFT DOWN at the same watts over the block. That is the real aerobic signal."}
- ]},
-
- C:{name:"Day C — Hinge, Agility, Trunk",label:"Day C",short:"Hinge + agility + trunk · ~64 min",items:[
-  {s:"Prep / Agility",q:"full body dynamic warm up",id:"c_prep",n:"Full-body warm-up",f:["done"],tg:"8 min",cue:"Morning session, fully un-sedated. Everything here is technique speed."},
-  {s:"Prep / Agility",q:"agility footwork drop step crossover shuffle",id:"c_agil",n:"Agility pattern circuit — 3 ROUNDS",f:["rounds","done"],sets:1,tg:"3 rounds · 12–15 min",cue:"THREE ROUNDS. NOT ONE. Across Block 2 this logged 1, 3, 0 and 1 against three prescribed — the most under-delivered item in the program, and it targets your one self-identified weak spot. Each round: split step → drop-step → retreat 5 m → plant → sprint 5 m forward, 4 reps alternating · crossover step 6 m each way × 2 · lateral shuffle 8 m each way × 2 · pogo hops × 20. W2–3 ONLY: on 4 of the drop-step reps do not decide the direction in advance — random phone beep or a coin flip."},
-  {s:"Power — full rest, never paired",q:"pogo hops jump rope stiffness",id:"c_pogo",n:"Pogo hops / jump rope",f:["reps"],sets:3,tg:"3 × 20 · bodyweight",cue:"Gastrocnemius and Achilles stiffness — what lets you change direction on unstable sand. Land tall, quiet, springy. BILATERAL by design: you told the board two-leg jumping is what the game actually demands."},
-  {s:"Strength — full rest · the 1–2 RIR lift",q:"trap bar deadlift form",id:"c_tbdl",n:"Trap-bar deadlift",f:["load","reps","rir"],sets:4,tg:"4 × 5 (W3: 4 × 4) · {L} lb",wk:[240,265,280,200,""],cue:"THE ONE LIFT ON DAY C THAT GOES NEAR FAILURE. 215 → 265 across Block 2, estimated 1RM near 322, roughly +5%. You also applied the load rule correctly to yourself at W2 — dropped 260 to 255 when reps fell off and got more reps. That is the rule working. Flat back, stand tall, control the lower, straps on the top sets."},
-  {s:"Pair A1 + A2 — superset",q:"dumbbell step up box",id:"c_lunge",n:"A1 — Step-up (20 in box)",f:["loadh","rleg","rir"],sets:3,tg:"3 × 8 /leg · {L} lb PER HAND",wk:[45,50,55,35,""],cue:"PER HAND. Stays unilateral because nothing bilateral delivers the same thing, and it maps to a Decathlon target. Drive through the whole foot, control the step down."},
-  {s:"Pair A1 + A2 — superset",q:"dumbbell floor press neutral grip",id:"c_push",n:"A2 — DB floor press (neutral)",f:["loadh","reps","rir"],sets:3,tg:"3 × 10 · {L} lb PER HAND",wk:[47.5,50,52.5,40,""],cue:"PER HAND. Neutral grip, and the floor limits end range for you — that is the point. Pause lightly at the floor, do not bounce. KEPT AS IS (2026-10-06): it already has both protections. If the front-of-shoulder pinch appears, stop and finish the sets on the neutral-grip machine chest press, and tick the arm box below."},
-  {s:"Pair B1 + B2 — superset",q:"45 degree back extension hyperextension form",id:"c_bext",n:"B1 — 45° BACK EXTENSION ★ NEW",f:["load","reps","rir"],sets:3,tg:"3 × 10–12 · {L} hold at chest",wk:["BW",10,25,"BW",""],cue:"THE ONE MEASURED WEAKNESS. Biering-Sørensen 120 s against a threshold where under 176 s predicts low-back pain within a year. NEUTRAL SPINE throughout — lower under control, return to horizontal, one-second pause at the top, NO HYPEREXTENSION. Endurance-biased reps because the test measures endurance, not max strength. EXHALE THROUGH EVERY REP, no breath-holding — the cardiac hold on loaded core stands until the stress test."},
-  {s:"Pair B1 + B2 — superset",q:"dead bug core anti extension",id:"c_db",n:"B2 — Dead bug (weighted)",f:["load","rside"],sets:3,tg:"3 × 8 /side · {L} lb",wk:[25,27.5,30,25,""],cue:"Anti-extension, and it pairs cleanly with the back extension — opposite sides of the same trunk. You were already ahead of the Block 2 prescription at 25 lb and then held it flat for four weeks, so it progresses now. Ribs down, low back flat to the floor, exhale on the reach."},
-  {s:"Accessory",q:"standing calf raise gastrocnemius",id:"c_calf",n:"Standing calf raise",f:["load","reps","rir"],sets:3,tg:"3 × 12 · {L} lb",wk:[200,210,220,170,""],cue:"GASTROCNEMIUS — knee straight. Clean progression across Block 2, 180 → 200. Full stretch at the bottom, pause at the top."},
-  {s:"Test",q:"biering sorensen trunk extensor endurance test",id:"c_bs",n:"Biering-Sørensen hold (TEST)",f:["sec"],sets:1,tg:"W1 & W4 only · LAST in the session",cue:"PROTOCOL PINNED — ANKLES, KNEES AND HIPS ALL FIXED OR STRAPPED. Prone on a bench, torso unsupported and horizontal, hold to failure, ONCE, as the LAST thing in the session because it would contaminate every lift after it. Exhale normally, no breath-holding. Reference: 120 s on 2026-08-15. Under 176 s predicts low-back pain within a year; over 198 s predicts its absence."},
-  {s:"Aerobic — may be run separately",q:"zone 2 cycling power watts",id:"c_z2",n:"Zone 2 (bike) — same day or Sunday",f:["min","watts","hr"],sets:1,tg:"30 min (W4: 25)",cue:"WATTS, not heart rate. Does not have to sit behind the lift — run it later the same day or Sunday morning. The minutes are the point, the adjacency is not. Do not delete it: it is the system you are most under-dosed on and it costs essentially nothing from the recovery budget."}
- ]},
-
- T:{name:"Friday — OPTIONAL easy day",label:"Friday (optional)",short:"Bonus only · Z2 + mobility",items:[
-  {s:"Aerobic",q:"zone 2 cycling power watts training",id:"t_z2",n:"Zone 2 bike",f:["min","watts","hr"],sets:1,tg:"W1–2 40 · W3 45 · W4 30 min",cue:"THIS DAY IS OPTIONAL AND NOTHING CRITICAL LIVES HERE. That is deliberate — the footwork moved into the Thursday and Saturday prep blocks because it was declared never-cut and then parked on the day that most often gets cut. Run on WATTS. If the day happens, this is pure bonus aerobic volume."},
-  {s:"Recovery",q:"mobility routine daily hips ankles t spine",id:"t_mob",n:"Layer 1 mobility + bird dog",f:["done"],sets:1,tg:"5–8 min",cue:"Ankle knee-to-wall 10/side · 90/90 hip switches · couch stretch · T-spine open-book · cat-cow · BIRD DOG 3 × 5/side with 8–10 s holds. The bird dog moved here from Day C now that the 45° back extension does the loaded extensor work properly."},
-  {s:"Recovery",q:"cool down spin after training",id:"t_cool",n:"Cool-down spin",f:["min","done"],sets:1,tg:"5 min minimum",cue:"Never stop a hard effort dead. Standing cardiology rule — applies to tennis too."}
- ]},
-
- X:{name:"Tennis / Cardio / Tests",label:"Tennis / Cardio / Tests",short:"Mon & Wed tennis · CoD test",items:[
-  {s:"Sport",q:"beach tennis footwork movement",id:"x_tennis",n:"Beach tennis (WHOOP tracks this)",f:["min","done"],sets:1,tg:"~90 min · Mon & Wed 6:30pm",cue:"YOU LOG THIS IN WHOOP, NOT HERE — your call, and WHOOP captured every session of Block 2 accurately. Only open this if something is worth flagging. If light-headedness happens, tick the box at the bottom and tell the board."},
-  {s:"Sport",q:"tennis warm up drills before match sand",id:"x_primer",n:"Pre-tennis sand primer",f:["done"],sets:1,tg:"5 min · before the match",cue:"Split step and drop-step only. TECHNIQUE SPEED STRICTLY — you are at peak clonazepam at 6:30pm, so no max intent and no reactive work. This is your only sand exposure for the pattern."},
-  {s:"Test",q:"change of direction agility test drop step",id:"x_cod",n:"CoD test — REVISED PROTOCOL",f:["sec"],sets:3,tg:"W1 & W4 · best of 3",cue:"REVISED, AND THIS IS THE ONLY FREE MOMENT TO CHANGE IT. New protocol: 5 m DROP-STEP RETREAT → plant → 5 m SPRINT FORWARD. The old version started with a backpedal, which is the fault and not the skill — your sport retreats by turning the hips and moving laterally. You have never run this test so there is no baseline to protect. Two lines 5 m apart, best of 3, full recovery, same surface and shoes. Hand timing carries about 0.2 s of error, so only a change bigger than 0.3 s is real. AFTER W1 THIS IS LOCKED."}
- ]}
-};
-/* Retired 2026-10-06 (front-of-shoulder pinch). Full definitions kept so sessions logged with them still render their PER-HAND fields. */
-var RETIRED={b_bench:{s:"Strength — full rest · the 1–2 RIR lift",q:"dumbbell bench press form",id:"b_bench",n:"DB bench press (regular grip)",f:["loadh","reps","rir"],sets:4,tg:"4 × 6 · {L} lb PER HAND",wk:[52.5,57.5,60,45,""],cue:"PER HAND. Regular grip is your call and four weeks of symptom-free pressing is real evidence — but keep a MODERATE ELBOW TUCK around 45°, not flared to 90°, and DO NOT let the dumbbells sink below chest level into deep extension. That end-range position is where the anterior shoulder stress lives, not the grip. If the discomfort in that arm recurs, this is suspect number one.",legacy:true},b_inc:{s:"Pair B1 + B2 — superset",q:"incline dumbbell press form",id:"b_inc",n:"B2 — Incline DB press",f:["loadh","reps","rir"],sets:2,tg:"2 × 12 · {L} lb PER HAND",wk:[45,47.5,50,40,""],cue:"PER HAND. Same end-range rule as the flat bench — do not sink into deep extension at the bottom.",legacy:true}};
-var LEGACY={a_db:"Dead bug (Day A — removed v2.4)",b_sp2:"Weighted side plank (retired 2026-08-28)",c_row:"Single-arm DB row (removed Block 3)",t_rep:"Sub-maximal Repeats (removed Block 3)",t_foot:"Footwork skill block (moved into gym prep, Block 3)",x_z2:"Zone 2 session (Cardio tab, Block 2)",x_agil:"Standalone agility session (Block 2)",a_mob2:"Ankle + hip finisher",a_fsq:"Front squat",a_bss:"Bulgarian split squat (Smith or vest)",a_ham:"Leg curl (machine)",a_lp:"Leg press (removed v2.4)",a_mob2:"Ankle + hip finisher",a_scr:"Seated calf raise",a_pallof:"Pallof press",a_mob:"Ankle + hip finisher",a_tbjump:"Trap-bar jump",a_broad:"Broad jump",
+var PROGRAM={"B": {"name": "Day B — Upper maintenance + shoulder + trunk", "label": "Day B", "short": "Tue · upper maintenance + shoulder · ~60 min", "items": [{"s": "Warm-up", "id": "b_z2", "n": "Zone 2 bike — warm-up", "f": ["min", "hr"], "tg": "10 min · nose-breathing pace", "cue": "ZONE 2 IS THE WARM-UP. Bike, nose-breathing, full sentences the whole time — that is the zone. Heart rate is the backup only: stay under ~136. Log minutes and average HR. Nothing else is required.", "sets": 1, "q": "zone 2 cycling easy pace"}, {"s": "Warm-up", "id": "b_prep", "n": "Shoulder prep", "f": ["done"], "tg": "6 min", "cue": "Shoulder CARs · band pull-aparts 2 × 15 · face pull 2 × 15 · band external rotation 2 × 12/side · prone Y-raise 2 × 10 · T-spine open-book 5/side.", "q": "shoulder warm up band pull apart face pull external rotation"}, {"s": "W1 only — testing", "id": "b_screen", "n": "Left/right screen (W1 ONLY)", "f": ["lval", "rval"], "tg": "W1 only · 10 min · replaces Pair C this week", "cue": "One row per test, LEFT then RIGHT. Row 1 ankle knee-to-wall (cm from the wall). Rows 2–5 score 0 = restricted or painful, 1 = limited, 2 = full: 2 hip internal rotation (seated) · 3 hip external rotation (seated) · 4 shoulder external rotation (lying, elbow at 90°) · 5 T-spine rotation (seated, arms crossed). Write anything odd in the notes.", "sets": 5, "q": "hip internal rotation test seated"}, {"s": "Power — full rest, never paired", "id": "b_mb", "n": "Rotational med-ball throw", "f": ["ball", "rside"], "tg": "3 × 4 /side · {L} lb ball", "cue": "Fast hips, not arm. Swing power comes from the hips and trunk — this keeps it. Ball goes to 10 lb in W3 only if W2 is still visibly fast.", "sets": 3, "wk": [8, 8, 10, 8], "rp": "4", "rest": 90, "q": "rotational med-ball throw"}, {"s": "Pair A — superset", "id": "b_pull", "n": "A1 — Assisted pull-up", "f": ["assist", "reps", "rir"], "tg": "3 × 6–8 · {L} lb ASSIST", "cue": "Log the ASSIST — lower is stronger. Block 3 took it 55 → 48.75. Target this block: 45 by W3. Neutral grip if your machine has it.", "sets": 3, "wk": [50, 47.5, 45, 60], "rp": "8", "rir": [3, 2, 2, 4], "rest": 70, "v": "https://www.youtube.com/watch?v=gx0RWT7WbmA"}, {"s": "Pair A — superset", "id": "b_mpress", "n": "A2 — Machine chest press, NEUTRAL grip ★ the 1–2 RIR lift", "f": ["load", "reps", "rir"], "tg": "3 × 8 (W3: 3 × 6–8) · {L} lb", "cue": "The day's one lift near failure from W2. Neutral handles, fixed path — this is the version that has stayed pain-free since October. Any front-of-shoulder pinch: stop and tick the arm box.", "sets": 3, "wk": [155, 165, 170, 125], "rp": "8", "rir": [3, 2, 1.5, 4], "rest": 70, "q": "machine chest press, neutral grip ★ the 1–2 rir lift"}, {"s": "Pair B — superset", "id": "b_row", "n": "B1 — Chest-supported T-bar row", "f": ["load", "reps", "rir"], "tg": "3 × 10 · {L} lb TOTAL", "cue": "Neutral handle. Straps if grip fades first.", "sets": 3, "wk": [60, 65, 70, 45], "rp": "10", "rir": [3, 2, 2, 4], "rest": 70, "q": "chest-supported t-bar row"}, {"s": "Pair B — superset", "id": "b_minc", "n": "B2 — Incline machine press, NEUTRAL grip", "f": ["load", "reps", "rir"], "tg": "3 × 10 · {L} lb", "cue": "Same machine every week so the numbers compare. Any pinch: stop and finish on the flat machine press.", "sets": 3, "wk": [140, 150, 155, 110], "rp": "10", "rir": [3, 2, 2, 4], "rest": 70, "q": "incline machine press, neutral grip"}, {"s": "Pair C — superset (skip in W1: screen instead)", "id": "b_cuff", "n": "C1 — Shoulder external rotation (cable or band) ★ NEW", "f": ["load", "rside", "rir"], "tg": "2 × 12–15 /side · {L}", "cue": "Elbow at your side on a small towel, rotate out slowly, 2 seconds back. Light on purpose: pick a load you could do 20 times and stop at 12–15. This is shoulder insurance, not strength work.", "sets": 2, "wk": ["FIND", "+5%", "+5%", "-30%"], "rp": "12", "rir": [3, 3, 3, 4], "rest": 40, "q": "cable external rotation rotator cuff"}, {"s": "Pair C — superset (skip in W1: screen instead)", "id": "b_pallof", "n": "C2 — Pallof press · 3-sec pause", "f": ["pin", "rside"], "tg": "2 × 10 /side · pin {L}", "cue": "Moved here from Thursday so the leg days carry only legs. Move the pin. Exhale through every rep — standing rule for all loaded trunk work.", "sets": 2, "wk": [17.5, 20, 22.5, 15], "rp": "10", "rest": 70, "q": "pallof press anti rotation core"}, {"s": "Carry", "id": "b_carry", "n": "Farmer's carry", "f": ["loadh", "distm"], "tg": "2 × 40 m · {L} lb PER HAND", "cue": "Both hands, no straps — the grip is the point. Log load and distance.", "sets": 2, "wk": [60, 65, 70, 55], "rp": "40", "rest": 60, "q": "farmer's carry"}, {"s": "Finish", "id": "b_cool", "n": "Cool-down 5 min", "f": ["done"], "tg": "5 min easy", "cue": "Easy walk or spin. Never stop a hard effort dead. Nothing else is required after training.", "q": "cool down walk after workout"}]}, "A": {"name": "Day A — Legs: squat + quads, jumps first", "label": "Day A", "short": "Thu · squat + quads · ~69 min", "items": [{"s": "Warm-up", "id": "a_z2", "n": "Zone 2 bike — warm-up", "f": ["min", "hr"], "tg": "10 min · nose-breathing pace", "cue": "ZONE 2 IS THE WARM-UP. Bike, nose-breathing, full sentences the whole time — that is the zone. Heart rate is the backup only: stay under ~136. Log minutes and average HR. Nothing else is required.", "sets": 1, "q": "zone 2 cycling easy pace"}, {"s": "Warm-up", "id": "a_prep", "n": "Mobility prep + split step → react", "f": ["done"], "tg": "5 min", "cue": "Ankle knee-to-wall 10/side · 90/90 switches · couch stretch 30 s/side · T-spine open-book 5/side · heel-raised big-toe hold 2 × 20 s · bodyweight squats × 10. Then SPLIT STEP → REACT 2 min: small hop, land balanced, break on a cue, vary the direction.", "q": "ankle knee to wall and 90/90 hip mobility warm up"}, {"s": "Power — full rest, never paired", "id": "a_tbjump", "n": "Trap-bar jump", "f": ["load", "reps"], "tg": "3 × 3 · {L} lb TOTAL", "cue": "Explode, reset every rep, stop the set when speed drops. Never grind a jump.", "sets": 3, "wk": [95, 105, 110, 85], "rp": "3", "rest": 150, "v": "https://www.youtube.com/watch?v=rZGkx5PaZSM"}, {"s": "W4 only — retest", "id": "a_broad", "n": "Broad jump (W4 RETEST ONLY)", "f": ["distin"], "tg": "W4 only · 3 max attempts · toe to toe", "cue": "Fully warmed up, 3 max attempts, stick the landing, measure TOE TO TOE from the line, log each. Reference: 98 in (Nov 15).", "sets": 3, "v": "https://www.youtube.com/watch?v=q7851uL2M8c"}, {"s": "W4 only — retest", "id": "a_vert", "n": "Vertical jump (W4 RETEST ONLY)", "f": ["hgtin"], "tg": "W4 only · same app · 3 attempts", "cue": "SAME APP as Aug 17 and Nov 15, same phone, surface, shoes and time of day. Log the best. Reference: 22 in (Nov 15).", "sets": 1, "q": "vertical jump countermovement test"}, {"s": "Strength — full rest · the 1–2 RIR lift", "id": "a_fsq", "n": "Front squat ★ the 1–2 RIR lift", "f": ["load", "reps", "rir"], "tg": "4 × 6 · {L} lb", "cue": "Deep, chest tall, cross-arm grip. Block 3 ended at 165 × 5 @2 RIR (est. max ~203). Six reps this block, not five — more muscle per set at the same effort. W1 at 3 RIR, then 1–2 RIR.", "sets": 4, "wk": [150, 160, 165, 115], "rp": "6", "rir": [3, 2, 1.5, 4], "rest": 150, "v": "https://www.youtube.com/watch?v=rSdoklU2xwU"}, {"s": "Pair A — superset", "id": "a_bss", "n": "A1 — Bulgarian split squat (DB one hand + stick)", "f": ["load", "rleg", "rir"], "tg": "3 × 8 /leg (W3: 6–8) · {L} lb ONE dumbbell", "cue": "Dumbbell in the hand opposite the front leg, same side every time. Other hand on a stick for balance only — fingertip contact.", "sets": 3, "wk": [60, 65, 70, 45], "rp": "8", "rir": [3, 2, 2, 4], "rest": 40, "v": "https://www.youtube.com/watch?v=q9tyObJgPzk"}, {"s": "Pair A — superset", "id": "a_scr", "n": "A2 — Seated calf raise", "f": ["load", "reps", "rir"], "tg": "3 × 12 · {L} lb", "cue": "Soleus. Two-second pause in the bottom stretch, full range. Saturday's standing calf raise covers the other calf muscle.", "sets": 3, "wk": [65, 70, 75, 45], "rp": "12", "rir": [3, 2, 2, 4], "rest": 70, "v": "https://www.youtube.com/watch?v=ORY-ke6vcgk"}, {"s": "Pair B — superset", "id": "a_ham", "n": "B1 — Seated leg curl", "f": ["load", "reps", "rir"], "tg": "3 × 8–12 · {L} lb", "cue": "Seated only, same machine. Hip flexed = hamstring trained long. Moved to Thursday so hamstrings get two exposures a week.", "sets": 3, "wk": [115, 125, 130, 90], "rp": "10", "rir": [3, 2, 2, 4], "rest": 40, "v": "https://www.youtube.com/watch?v=P7-RxTVe6O0"}, {"s": "Pair B — superset", "id": "a_cop", "n": "B2 — Short-lever Copenhagen hold ★ NEW", "f": ["sec"], "tg": "2 × {L} s /side · knee on bench", "cue": "Side plank on your forearm, TOP KNEE on the bench (short lever), bottom leg free. Hold, breathing normally — exhale, no breath-holding. Forearm directly under the shoulder. Any pinch in the right shoulder: stop and tick the arm box. Adductor strength protects the groin on sand and on skis.", "sets": 2, "wk": [20, 25, 30, 15], "rp": "", "rest": 70, "q": "short lever copenhagen plank knee"}, {"s": "Back — second weekly exposure", "id": "a_crow", "n": "Seated cable row, NEUTRAL handle ★ NEW", "f": ["load", "reps", "rir"], "tg": "3 × 10–12 · {L} lb", "cue": "Your call (Nov 15): back gets a second weekly exposure even if Thursday runs past 60 min. Neutral handle, chest tall, pull to the lower ribs, 1-second squeeze, 2 seconds back. Straps if grip fades first. Not paired — the legs are done by now.", "sets": 3, "wk": ["FIND", "+5%", "+5%", "-30%"], "rp": "10", "rir": [3, 2, 2, 4], "rest": 75, "q": "seated cable row neutral grip"}, {"s": "Finish", "id": "a_cool", "n": "Cool-down 5 min", "f": ["done"], "tg": "5 min easy", "cue": "Easy walk or spin. Nothing else is required after training.", "q": "cool down walk after workout"}]}, "C": {"name": "Day C — Legs: hinge, glutes, single-leg, agility", "label": "Day C", "short": "Sat · hinge + single-leg + agility · ~68 min", "items": [{"s": "Warm-up", "id": "c_z2", "n": "Zone 2 bike — warm-up", "f": ["min", "hr"], "tg": "10 min · nose-breathing pace", "cue": "ZONE 2 IS THE WARM-UP. Bike, nose-breathing, full sentences the whole time — that is the zone. Heart rate is the backup only: stay under ~136. Log minutes and average HR. Nothing else is required.", "sets": 1, "q": "zone 2 cycling easy pace"}, {"s": "Warm-up", "id": "c_prep", "n": "Full-body prep (written out)", "f": ["done"], "tg": "5 min", "cue": "Leg swings front-back and side-side 10 each · 90/90 switches 5/side · lunge + T-spine rotation 5/side (kneeling if balance limits) · T-spine open-book 5/side · glute bridge × 10 · bird dog 2 × 5/side · dowel hinge × 10.", "q": "full body dynamic warm up"}, {"s": "Agility", "id": "c_agil", "n": "Agility pattern circuit — 3 ROUNDS", "f": ["rounds", "done"], "tg": "3 rounds · 12 min (W1: 2 rounds + CoD test)", "cue": "Each round: split step → drop-step → retreat 5 m → plant → sprint 5 m (4 reps, alternate sides) · crossover 6 m × 2 each way · lateral shuffle 8 m × 2 each way · lateral hop → single-leg stick × 3/side · snapdown to stick × 4 · pogo hops × 20. W2–3: on 4 drop-steps, let a random beep pick the direction. Landings loud = set over.", "sets": 1, "v": "https://www.youtube.com/watch?v=b5qhkvu11Fw"}, {"s": "Agility", "id": "c_cod", "n": "Change-of-direction test (W1 & W4)", "f": ["sec"], "tg": "W1 & W4 · best of 3 · replaces round 3", "cue": "5 m DROP-STEP RETREAT → plant → 5 m SPRINT forward. Two lines 5 m apart, best of 3, full recovery, same surface and shoes. W1 sets the first-ever baseline. Hand timing has ~0.2 s error: only a change over 0.3 s is real.", "sets": 3, "q": "change of direction agility test drop step"}, {"s": "Strength — full rest · the 1–2 RIR lift", "id": "c_tbdl", "n": "Trap-bar deadlift ★ the 1–2 RIR lift", "f": ["load", "reps", "rir"], "tg": "4 × 6 · {L} lb", "cue": "Block 3 ended at 285 × 4 @1 RIR (est. max ~332). Six reps this block. Flat back, stand tall, control the lower, straps on top sets.", "sets": 4, "wk": [245, 260, 270, 200], "rp": "6", "rir": [3, 2, 1.5, 4], "rest": 150, "v": "https://www.youtube.com/watch?v=tpUKFfIFG24"}, {"s": "Pair A — superset", "id": "c_lunge", "n": "A1 — Step-up (20 in box)", "f": ["loadh", "rleg", "rir"], "tg": "3 × 8 /leg (W3: 6–8) · {L} lb PER HAND", "cue": "Drive through the whole foot, control the step down. Glutes and quads, one leg at a time.", "sets": 3, "wk": [40, 45, 50, 30], "rp": "8", "rir": [3, 2, 2, 4], "rest": 40, "v": "https://www.youtube.com/watch?v=Q2k3kYbtOcI"}, {"s": "Pair A — superset", "id": "c_bext", "n": "A2 — 45° back extension", "f": ["load", "reps", "rir"], "tg": "3 × 12 (W3: 10–12) · {L} lb at the chest", "cue": "Your one measured weak spot (back-extension hold 120 s vs a 176 s target). Neutral spine, one-second pause at the top, no hyperextension. Exhale every rep and stay at 2+ RIR — standing rule for loaded trunk work.", "sets": 3, "wk": [20, 25, 30, "BW"], "rp": "12", "rir": [3, 2, 2, 4], "rest": 70, "q": "45° back extension"}, {"s": "Pair B — superset", "id": "c_coss", "n": "B1 — Assisted Cossack squat ★ NEW", "f": ["load", "rside", "rir"], "tg": "2 × 6 /side (W2: 8) · {L}", "cue": "Wide stance, sit into one hip with the other leg straight, toes up. Hold a rack or band for balance — that is the 'assisted' part. Go only as deep as you control. W3: hold a 10 lb weight at the chest if W2 was clean. Side-to-side strength for sand and skis. Third round: calf raise only.", "sets": 2, "wk": ["BW", "BW", "10", "BW"], "rp": "6", "rir": [3, 3, 2, 4], "rest": 75, "q": "assisted cossack squat beginner"}, {"s": "Pair B — superset", "id": "c_calf", "n": "B2 — Standing calf raise", "f": ["load", "reps", "rir"], "tg": "3 × 12 · {L} lb", "cue": "Back in, your call (Nov 15). Gastrocnemius — knee straight. Full stretch at the bottom, pause at the top. Block 3 ended at 220 × 12 @2 RIR.", "sets": 3, "wk": [210, 220, 230, 170], "rp": "12", "rir": [3, 2, 2, 4], "rest": 70, "q": "standing calf raise gastrocnemius"}, {"s": "W1 & W4 — test", "id": "c_bs", "n": "Back-extension hold (Biering-Sørensen) — W1 & W4", "f": ["sec"], "tg": "W1 & W4 · LAST thing in the session", "cue": "Prone on a bench, ankles, knees and hips fixed, torso unsupported and horizontal. Hold to failure, once, last thing. Breathe normally. Reference: 120 s (Aug 15). Under 176 s is the risk zone; over 198 s is the target.", "sets": 1, "q": "biering sorensen trunk extensor endurance test"}, {"s": "Finish", "id": "c_cool", "n": "Cool-down 5 min", "f": ["done"], "tg": "5 min easy", "cue": "Easy walk or spin. Nothing else is required after training.", "q": "cool down walk after workout"}]}, "T": {"name": "Friday — OPTIONAL", "label": "Friday (optional)", "short": "Bonus only · Zone 2 or mobility", "items": [{"s": "Aerobic", "id": "t_z2", "n": "Zone 2 bike — stand-alone", "f": ["min", "hr"], "tg": "30–40 min if you feel like it", "cue": "Optional and nothing depends on it. Nose-breathing, full sentences, HR backup under ~136.", "sets": 1, "q": "zone 2 cycling easy pace"}, {"s": "Recovery", "id": "t_mob", "n": "Mobility + bird dog", "f": ["done"], "tg": "8–10 min", "cue": "Ankle knee-to-wall 10/side · 90/90 switches · couch stretch · T-spine open-book · cat-cow · bird dog 3 × 5/side with 8–10 s holds.", "v": "https://www.youtube.com/watch?v=wiFNA3sqjCA"}]}, "X": {"name": "Tennis", "label": "Tennis (Mon / Wed)", "short": "Mon & Wed · primer + cool-down", "items": [{"s": "Before", "id": "x_primer", "n": "Pre-tennis primer (8–10 min)", "f": ["done"], "tg": "8–10 min · before the match", "cue": "Ankle bounces 30 s · lateral lunges 5/side · leg swings both planes 10 each · standing T-spine rotations 10 · band external rotation 12/side (right shoulder) · then split step and drop-step at TECHNIQUE SPEED only. Fluids and electrolytes before you start.", "q": "beach tennis warm up drills"}, {"s": "Sport", "id": "x_tennis", "n": "Beach tennis (WHOOP tracks this)", "f": ["min", "done"], "tg": "logged in WHOOP", "cue": "Only open this if something is worth flagging. If light-headed: stop, sit, hydrate — never play through it.", "sets": 1, "q": "beach tennis"}, {"s": "After", "id": "x_cool", "n": "Cool-down 5 min", "f": ["done"], "tg": "5 min walk", "cue": "Walk it down. Never stop a hard effort dead.", "q": "cool-down 5 min"}]}};
+/* Retired items: names and fields only, so older sessions still render and export. */
+var RETIRED={"a_split": {"s": "Retired", "id": "a_split", "n": "Split step → react ★ NEW", "f": ["rounds", "done"], "sets": 1, "legacy": true}, "a_decel": {"s": "Retired", "id": "a_decel", "n": "Deceleration & landing block", "f": ["rounds", "done"], "sets": 1, "legacy": true}, "a_pallof": {"s": "Retired", "id": "a_pallof", "n": "B2 — Pallof press · 3-sec pause", "f": ["pin", "rside"], "sets": 3, "legacy": true}, "b_lm": {"s": "Retired", "id": "b_lm", "n": "A2 — Landmine press, TWO-HANDED", "f": ["load", "reps", "rir"], "sets": 3, "legacy": true}, "b_hammer": {"s": "Retired", "id": "b_hammer", "n": "C1 — Hammer curl (neutral)", "f": ["loadh", "reps", "rir"], "sets": 2, "legacy": true}, "b_ohtri": {"s": "Retired", "id": "b_ohtri", "n": "C2 — Overhead DB triceps extension", "f": ["load", "reps", "rir"], "sets": 2, "legacy": true}, "c_pogo": {"s": "Retired", "id": "c_pogo", "n": "Pogo hops / jump rope", "f": ["reps"], "sets": 3, "legacy": true}, "c_push": {"s": "Retired", "id": "c_push", "n": "A2 — DB floor press (neutral)", "f": ["loadh", "reps", "rir"], "sets": 3, "legacy": true}, "c_db": {"s": "Retired", "id": "c_db", "n": "B2 — Dead bug (weighted)", "f": ["load", "rside"], "sets": 3, "legacy": true}, "t_cool": {"s": "Retired", "id": "t_cool", "n": "Cool-down spin", "f": ["min", "done"], "sets": 1, "legacy": true}, "x_cod": {"s": "Retired", "id": "x_cod", "n": "CoD test — REVISED PROTOCOL", "f": ["sec"], "sets": 3, "legacy": true}, "b_bench": {"s": "Retired", "id": "b_bench", "n": "DB bench press (regular grip)", "f": ["loadh", "reps", "rir"], "sets": 4, "legacy": true}, "b_inc": {"s": "Retired", "id": "b_inc", "n": "B2 — Incline DB press", "f": ["loadh", "reps", "rir"], "sets": 2, "legacy": true}};
+var LEGACY={a_db:"Dead bug (Day A \u2014 removed v2.4)",b_sp2:"Weighted side plank (retired 2026-08-28)",c_row:"Single-arm DB row (removed Block 3)",t_rep:"Sub-maximal Repeats (removed Block 3)",t_foot:"Footwork skill block (moved into gym prep, Block 3)",x_z2:"Zone 2 session (Cardio tab, Block 2)",x_agil:"Standalone agility session (Block 2)",a_mob2:"Ankle + hip finisher",a_fsq:"Front squat",a_bss:"Bulgarian split squat (Smith or vest)",a_ham:"Leg curl (machine)",a_lp:"Leg press (removed v2.4)",a_mob2:"Ankle + hip finisher",a_scr:"Seated calf raise",a_pallof:"Pallof press",a_mob:"Ankle + hip finisher",a_tbjump:"Trap-bar jump",a_broad:"Broad jump",
 b_mb:"Med-ball throw (wall)",b_bench:"DB bench press (retired 2026-10-06)",b_pull:"Assisted pull-up",b_lm:"Landmine press",b_row:"Chest-supported T-bar row",b_inc:"Incline DB press",b_face:"Face pull (moved to Day B warm-up, v2.4)",b_curl:"Hammer curl (neutral grip)",b_tri:"Overhead DB triceps extension",b_carry:"Suitcase carry",b_mob:"T-spine + shoulder finisher",
 a_db:"Dead bug (Day A — removed v2.4)",b_sp:"Side plank (Day B — removed v2.4)",b_hammer:"Hammer curl (neutral)",b_ohtri:"Overhead DB triceps extension",
 c_agil:"Agility drills",c_pogo:"Pogo hops / jump rope",c_tbdl:"Trap-bar deadlift",c_lunge:"DB reverse lunge",c_push:"DB floor press (neutral grip)",c_row:"Single-arm DB row",c_calf:"Standing calf raise",c_db:"Dead bug",c_sp:"Bird dog (was: side plank)",c_z2:"Zone 2 finisher"};
@@ -206,10 +164,28 @@ function itemById(day,id){
  if(LEGACY[id])return{id:id,n:LEGACY[id],f:["load","reps","rir"],legacy:true};
  return{id:id,n:id,f:["load","reps","rir"],legacy:true};
 }
-function targetFor(it,week){
- var t=it.tg||"";
- if(it.wk&&week){var L=it.wk[week-1];t=t.replace("{L}",(L===""||L==null)?"—":L);}
- return t.replace("{L}","—");
+function topLoad(e){
+ var best=0;(e&&e.sets||[]).forEach(function(st){LOADK.concat(["pin"]).forEach(function(k){var v=parseFloat(st[k]);if(v>best)best=v;});});
+ return best;
+}
+function r25(x){return Math.round(x/2.5)*2.5;}
+/* A load the program states as a rule ("+5%", "-30%", "FIND") becomes a real number here,
+   from the last time you logged that exercise. */
+function loadFor(it,week,sid){
+ if(!it.wk||!week)return null;
+ var L=it.wk[week-1];
+ if(L===""||L==null)return null;
+ if(typeof L==="number")return L;
+ var m=String(L).match(/^([+-])(\d+)%$/);
+ if(m){var lf=lastFor(it.id,sid),base=lf?topLoad(lf.e):0;
+  if(!base)return "FIND";
+  var f=1+(m[1]==="+"?1:-1)*parseInt(m[2],10)/100;return r25(base*f);}
+ return L;
+}
+function targetFor(it,week,sid){
+ var t=it.tg||"",L=loadFor(it,week,sid);
+ if(L==="FIND")t=t.replace("{L}","FIND (pick a load you\u2019d finish with ~3 reps left)");
+ return t.replace("{L}",(L===""||L==null)?"\u2014":L);
 }
 
 /* =========================================================
@@ -307,7 +283,7 @@ function daysSinceExport(){if(!DB.lastExport)return null;return Math.floor((Date
 /* ---------- HELPERS ---------- */
 function el(h){var d=document.createElement("div");d.innerHTML=h;return d.firstElementChild;}
 function esc(s){return(s==null?"":String(s)).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
-function e1rm(w,r){w=parseFloat(w);r=parseFloat(r);if(!w||!r)return null;return Math.round(w*(1+r/30));}
+function e1rm(w,r,rir){w=parseFloat(w);r=parseFloat(r);var q=parseFloat(rir);if(!w||!r)return null;if(isNaN(q))q=0;return Math.round(w*(1+(r+q)/30));}
 function stamp(s){return s.started||((s.date||"")+"T00:00:00.000Z");}
 function lastFor(id,exceptId){
  var cur=DB.sessions.filter(function(x){return x.id===exceptId;})[0];
@@ -355,7 +331,7 @@ function setStr(it,st){
 }
 
 /* ---------- ROUTER ---------- */
-function go(v){view=v;["log","hist","data","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
+function go(v){view=v;try{window.scrollTo(0,0);}catch(e){}["log","hist","data","info"].forEach(function(t){document.getElementById("tab-"+t).classList.toggle("on",t===v);});render();}
 function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else renderInfo(a);}
 
 /* ---------- LOG ---------- */
@@ -366,7 +342,7 @@ function renderLog(a){
  document.getElementById("hdrS").textContent=BLOCK+" · start or resume a session";
  if(!storageOK)a.appendChild(el('<div class="warn"><b>This device is refusing to save.</b> Do not log a session until this is fixed — go to the Send tab and export what you have now.</div>'));
  var dse=daysSinceExport();
- if(dse!==null&&dse>=14)a.appendChild(el('<div class="warn"><b>'+dse+' days since your last export.</b> iPhones can clear web-app storage. Send a backup from the Send tab.</div>'));
+ if(dse===null||dse>=7){var bw=el('<div class="warn"><b>'+(dse===null?'No backup sent from this phone yet.':dse+' days since your last backup.')+'</b> Send tab \u2192 Share JSON backup \u2192 Save to Files \u2192 03-Performance / Sources / Logger-Backups. Tap here to go there.</div>');bw.onclick=function(){go("data");};a.appendChild(bw);}
 
  var open=openSessions();
  if(open.length){
@@ -378,7 +354,18 @@ function renderLog(a){
   a.appendChild(el('<div class="mut">These are already saved. Resuming just adds to them.</div>'));
  }
 
- a.appendChild(el('<div class="note">Everything is saved the instant you type it, and a session is stored the moment you start it. You never have to remember to press anything for your data to survive.</div>'));
+ var un=upNext();
+ if(un){
+  var card=el('<div class="upnext"><div class="k">Up next \u00b7 '+esc(BLOCK)+' \u00b7 Week '+un.week+(un.week===4?' (deload)':'')+'</div><div class="d">'+esc(PROGRAM[un.day].label)+' \u2014 '+esc(PROGRAM[un.day].name.split("\u2014")[1]||"")+'</div><div class="m">'+esc(PROGRAM[un.day].short)+(un.tests?' \u00b7 TESTS: '+esc(un.tests):'')+'</div></div>');
+  var go1=el('<button class="btn gold">Start '+esc(PROGRAM[un.day].label)+' \u00b7 Week '+un.week+'</button>');
+  go1.onclick=function(){sel.week=un.week;chooseSession(un.day,un.week);};
+  a.appendChild(card);a.appendChild(go1);
+  var row=el('<div class="wkrow"></div>');
+  ORDER.forEach(function(k){row.appendChild(el('<div class="'+(un.done[k]?"ok":"")+'">'+(un.done[k]?"\u2713 ":"")+esc(PROGRAM[k].label)+'</div>'));});
+  a.appendChild(el('<div class="lbl">Week '+un.week+' so far</div>'));a.appendChild(row);
+  a.appendChild(el('<div class="mut" style="margin-top:6px">Order governs, not the weekday: B \u2192 A \u2192 C. Day A is never dropped. Only two fit? Do A and C with a day between.</div>'));
+ }
+ a.appendChild(el('<div class="lbl">Or pick any session</div>'));
  a.appendChild(el('<div class="lbl">Week of block</div>'));
  var wk=el('<div class="pick"></div>');
  for(var w=1;w<=NWEEKS;w++)(function(w){
@@ -396,13 +383,25 @@ function renderLog(a){
  var done=DB.sessions.filter(function(s){return s.status==="done";});
  if(done.length)a.appendChild(el('<div class="mut" style="margin-top:14px">'+done.length+' completed sessions stored · last: '+esc(done[done.length-1].date)+'</div>'));
 }
+/* Up next: the rotation, not the calendar. A week is complete when B, A and C all have a
+   finished session in this block; the next gym day is the first one in ORDER not yet done. */
+var TESTS={1:{B:"left/right screen",C:"change of direction + back-extension hold"},4:{A:"broad jump + vertical",C:"change of direction + back-extension hold"}};
+function upNext(){
+ var mine=DB.sessions.filter(function(s){return (s.block||2)===BLOCKNUM&&s.status==="done"&&ORDER.indexOf(s.day)>=0&&entryCount(s)>0;});
+ for(var w=1;w<=NWEEKS;w++){
+  var done={};mine.forEach(function(s){if(s.week===w)done[s.day]=true;});
+  var nx=ORDER.filter(function(k){return !done[k];})[0];
+  if(nx)return{week:w,day:nx,done:done,tests:(TESTS[w]&&TESTS[w][nx])||""};
+ }
+ return null;
+}
 function dayLabel(k){return PROGRAM[k]&&PROGRAM[k].label?PROGRAM[k].label:(PROGRAM[k]?PROGRAM[k].name:k);}
 
 /* A slot you have already logged must never silently open blank. Tapping a
    week+day that already has a record offers that record first; a brand new
    blank session becomes a deliberate second choice. */
 function sessionsForSlot(day,week){
- return DB.sessions.filter(function(s){return s.day===day&&s.week===week&&(s.block||2)===2;});
+ return DB.sessions.filter(function(s){return s.day===day&&s.week===week&&(s.block||2)===BLOCKNUM;});
 }
 function entryCount(s){
  return Object.keys(s.entries||{}).filter(function(k){
@@ -432,7 +431,7 @@ function renderPending(a){
  a.appendChild(el('<div class="mut">Only if you genuinely trained '+esc(dayLabel(day))+' twice in week '+week+'. Otherwise this is how blank duplicates get into your export.</div>'));
 }
 function startSession(day,week){
- var s={id:uid(),date:today(),day:day,week:week,block:3,entries:{},note:"",dizzy:false,status:"open",started:nowISO(),updated:nowISO()};
+ var s={id:uid(),date:today(),day:day,week:week,block:BLOCKNUM,entries:{},note:"",dizzy:false,status:"open",started:nowISO(),updated:nowISO()};
  DB.sessions.push(s);save();activeId=s.id;render();
 }
 function renderSession(a,s){
@@ -442,9 +441,10 @@ function renderSession(a,s){
  if(s.status==="done")a.appendChild(el('<div class="note"><b>Editing a completed session</b> from '+esc(s.date)+'. Changes save as you type, exactly as during a live session.</div>'));
  a.appendChild(el('<h2 class="scr">'+esc(PROGRAM[s.day].name)+'</h2>'));
  a.appendChild(el('<div class="note">'+esc(WEEKTIP[s.week]||"")+'</div>'));
- a.appendChild(el('<div class="note">'+esc(LOADRULE)+'</div>'));
- a.appendChild(el('<div class="note">'+esc(RIRRULE)+'</div>'));
- if(["A","B","C"].indexOf(s.day)>=0)a.appendChild(el('<div class="note">'+esc(PAIRRULE)+'</div>'));
+ var rb=el('<div class="tool" style="margin:6px 0">\u24d8 Load, RIR and pair rules</div>'),rbox=el('<div style="display:none"></div>');
+ [LOADRULE,RIRRULE,PAIRRULE].forEach(function(x){rbox.appendChild(el('<div class="note">'+esc(x)+'</div>'));});
+ rb.onclick=function(){var o=rbox.style.display==="none";rbox.style.display=o?"block":"none";rb.classList.toggle("on",o);};
+ a.appendChild(rb);a.appendChild(rbox);
  var curSec="";
  PROGRAM[s.day].items.forEach(function(it){
   if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
@@ -455,14 +455,14 @@ function renderSession(a,s){
  var retiredHere=Object.keys(s.entries||{}).filter(function(id){if(curIds[id]||!RETIRED[id])return false;var e=s.entries[id];return (e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});})||e.done||e.txt;});
  if(retiredHere.length){a.appendChild(el('<div class="sec-h">Retired exercises \u2014 logged in this session</div>'));retiredHere.forEach(function(id){a.appendChild(exCard(RETIRED[id],s));});}
  // session-level extras
- var dt=el('<div class="card"><div class="exn">Session date</div><input type="date" value="'+esc(s.date)+'"><div class="cue">This stamps when you TAP the day, and updates again when you mark the session complete. If you opened it on one day and trained on another, fix it here \u2014 Block 2 exports carried two wrong dates because of this.</div></div>');
+ var dt=el('<div class="card"><div class="exn">Session date</div><input type="date" value="'+esc(s.date)+'"><div class="cue">Set to the day you opened the session. If you trained on a different day, fix it here \u2014 marking the session complete no longer changes it.</div></div>');
  dt.querySelector("input").addEventListener("change",function(e){if(e.target.value){s.date=e.target.value;s.updated=nowISO();save();document.getElementById("hdrS").textContent=dayLabel(s.day)+" \u00b7 Week "+s.week+" \u00b7 "+s.date;}});
  a.appendChild(dt);
- var arm=el('<div class="card"><div class="exn">Arm or shoulder discomfort today?</div><div class="done"><input type="checkbox" '+(s.arm?"checked":"")+'><span class="mut">Yes \u2014 it happened</span></div><input type="text" placeholder="Which exercise? (e.g. bench set 3)" value="'+esc(s.armNote||"")+'"><div class="cue">TRIPWIRE. Oct 5: a front-of-shoulder pinch on both Day B DB presses, gone by the next morning, none on the neutral-grip machine, landmine or pull-up \u2192 DB bench and incline DB swapped to neutral-grip machines. Name the exercise if it happens again. See a sports-medicine doctor if you get clicking, catching, night pain, weakness, pain still there the next morning, or symptoms that continue on the machine for 2 weeks.</div></div>');
+ var arm=el('<div class="card"><div class="exn">Arm or shoulder discomfort today?</div><div class="done"><input type="checkbox" '+(s.arm?"checked":"")+'><span class="mut">Yes \u2014 it happened</span></div><input type="text" placeholder="Which exercise? (e.g. Copenhagen set 2)" value="'+esc(s.armNote||"")+'"><div class="cue">TRIPWIRE. If anything pinches, stop that exercise, name it here and tell the board. Watch especially the new Copenhagen hold and the chest presses.</div></div>');
  arm.querySelector('input[type=checkbox]').addEventListener("change",function(e){s.arm=e.target.checked;s.updated=nowISO();save();});
  arm.querySelector('input[type=text]').addEventListener("input",function(e){s.armNote=e.target.value;s.updated=nowISO();save();});
  a.appendChild(arm);
- var dz=el('<div class="card"><div class="exn">Any light-headedness today?</div><div class="done"><input type="checkbox" '+(s.dizzy?"checked":"")+'><span class="mut">Yes — it happened</span></div><div class="cue">Standing open item. If yes: stop, sit, hydrate, and tell the board. Never play through it on sand.</div></div>');
+ var dz=el('<div class="card"><div class="exn">Light-headed at any point today?</div><div class="done"><input type="checkbox" '+(s.dizzy?"checked":"")+'><span class="mut">Yes — it happened</span></div><div class="cue">If yes: stop, sit, hydrate, and tell the board.</div></div>');
  dz.querySelector("input").addEventListener("change",function(e){s.dizzy=e.target.checked;s.updated=nowISO();save();});
  a.appendChild(dz);
  var nt=el('<div class="card"><div class="exn">Session notes</div><textarea rows="3" placeholder="Energy, joints, anything worth flagging...">'+esc(s.note||"")+'</textarea></div>');
@@ -478,17 +478,26 @@ function renderSession(a,s){
   a.appendChild(el('<div class="mut">Every change here is already saved. These buttons only decide where the session sits.</div>'));
  }else{
   var fin=el('<button class="btn gold">Mark session complete</button>');
-  fin.onclick=function(){s.status="done";s.date=today();s.updated=nowISO();save();activeId=null;alert("Marked complete. It was already saved — this just tidies History.");go("hist");};
+  fin.onclick=function(){s.status="done";s.updated=nowISO();save();activeId=null;alert("Marked complete. It was already saved — this just tidies History.");go("hist");};
   a.appendChild(fin);
   a.appendChild(el('<div class="mut">This session is already stored. "Complete" only moves it out of the in-progress list.</div>'));
  }
 }
 
+/* This week's plan for one set, shown grey in the empty boxes. Nothing is stored until
+   you type or tap \u2713, so an untouched row never looks like a set you did. */
+function planFor(it,s,fields){
+ var p={},L=loadFor(it,s.week,s.id);
+ if(typeof L==="number"){LOADK.concat(["assist","ball","pin","sec"]).forEach(function(k){if(fields.indexOf(k)>=0)p[k]=L;});}
+ if(it.rp){["reps","rside","rleg","distm"].forEach(function(k){if(fields.indexOf(k)>=0)p[k]=it.rp;});}
+ if(it.rir&&fields.indexOf("rir")>=0){var r=it.rir[s.week-1];if(r!=null)p.rir=r;}
+ return p;
+}
 function exCard(it,s){
  var ent=s.entries[it.id]||(s.entries[it.id]={sets:[]});
  var card=el('<div class="card"></div>');
  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
- var tg=targetFor(it,s.week);if(tg)card.appendChild(el('<div class="tgt">'+esc(tg)+'</div>'));
+ var tg=targetFor(it,s.week,s.id);if(tg)card.appendChild(el('<div class="tgt">'+esc(tg)+'</div>'));
  if(it.cue||it.q){
   var tools=el('<div class="tools"></div>');
   var cueBox=null;
@@ -509,6 +518,7 @@ function exCard(it,s){
    var label=it.v?"▶ Video":"▶ Find video";
    tools.appendChild(el('<a class="tool" target="_blank" rel="noopener" href="'+href+'">'+label+'</a>'));
   }
+  if(it.rest){var rt=el('<div class="tool">\u23f1 Rest '+fmt(it.rest)+'</div>');rt.onclick=function(){tSet(it.rest);tShow();tStart();};tools.appendChild(rt);}
   card.appendChild(tools);
   if(cueBox)card.appendChild(cueBox);
  }
@@ -532,11 +542,20 @@ function exCard(it,s){
    body.innerHTML="";
    ent.sets.forEach(function(st,i){
     var row=el('<div class="setrow"><div class="n">'+(i+1)+'</div></div>');
+    var ph=planFor(it,s,fields),inps={};
     fields.forEach(function(f){
-     var inp=el('<input type="number" inputmode="decimal" step="any" placeholder="'+esc(FT[f].ph)+'" value="'+esc(st[f]!==undefined?st[f]:"")+'">');
+     var inp=el('<input type="number" inputmode="decimal" step="any" placeholder="'+esc(ph[f]!=null?ph[f]:FT[f].ph)+'" value="'+esc(st[f]!==undefined?st[f]:"")+'">');
      inp.addEventListener("input",function(e){st[f]=e.target.value;s.updated=nowISO();save();updEst();});
-     row.appendChild(inp);
+     inps[f]=inp;row.appendChild(inp);
     });
+    if(Object.keys(ph).length){
+     var ok=el('<button class="okset" title="Log this set as shown">\u2713</button>');
+     ok.onclick=function(){
+      var any=false;fields.forEach(function(f){if((st[f]===undefined||st[f]==="")&&ph[f]!=null){st[f]=String(ph[f]);inps[f].value=st[f];any=true;}});
+      if(any){s.updated=nowISO();save();updEst();ok.textContent="\u2714";}
+     };
+     row.appendChild(ok);
+    }
     var dl=el('<button class="delset" title="Delete this set">\u00d7</button>');
     dl.onclick=function(){
      if(ent.sets.length<=1){alert("This is the last set. Clear the numbers instead \u2014 an exercise always keeps one row.");return;}
@@ -556,8 +575,8 @@ function exCard(it,s){
   function updEst(){
    var lk=LOADK.filter(function(k){return fields.indexOf(k)>=0;})[0];
    if(!lk||fields.indexOf("rir")<0){est.textContent="";return;}
-   var best=0;ent.sets.forEach(function(st){var e=e1rm(st[lk],st.reps||st.rleg||st.rside);if(e&&e>best)best=e;});
-   est.textContent=best?("Est. 1RM ≈ "+best+" lb"):"";
+   var best=0;ent.sets.forEach(function(st){var e=e1rm(st[lk],st.reps||st.rleg||st.rside,st.rir);if(e&&e>best)best=e;});
+   est.textContent=best?("Est. max \u2248 "+best+" lb (counts your reps in reserve)"):"";
   }
   updEst();
  }
@@ -583,7 +602,7 @@ function renderHist(a){
    var e=s.entries[k];return e&&(e.done||(e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});}));
   }).length;
   var flags=(s.status==="open"?'<span class="badge">IN PROGRESS</span>':"")+(s.autoClosed?'<span class="badge">AUTO-CLOSED</span>':"")+(s.recovered?'<span class="badge">RECOVERED</span>':"")+(s.dizzy?'<span class="badge" style="background:var(--bad);color:#fff">LIGHT-HEADED</span>':"");
-  var h=el('<div class="hist'+(s.status==="open"?" open":"")+'"><div class="d">'+esc(s.date)+' · '+dayLabel(s.day)+' <span class="mut">(W'+s.week+(s.block===1?" · Block 1":"")+')</span>'+flags+'</div><div class="m">'+cnt+' exercises logged'+(s.note?' · "'+esc(s.note.slice(0,50))+'"':"")+'</div></div>');
+  var h=el('<div class="hist'+(s.status==="open"?" open":"")+'"><div class="d">'+esc(s.date)+' · '+dayLabel(s.day)+' <span class="mut">(B'+(s.block||2)+' · W'+s.week+')</span>'+flags+'</div><div class="m">'+cnt+' exercises logged'+(s.note?' · "'+esc(s.note.slice(0,50))+'"':"")+'</div></div>');
   h.onclick=function(){showSession(s.id);};a.appendChild(h);
  })(DB.sessions[i]);
 }
@@ -591,7 +610,7 @@ function showSession(id){
  var s=DB.sessions.filter(function(x){return x.id===id;})[0];if(!s)return;
  var a=document.getElementById("app");a.innerHTML="";
  var back=el('<button class="btn ghost sm">‹ Back to history</button>');back.onclick=function(){go("hist");};a.appendChild(back);
- a.appendChild(el('<h2 class="scr">'+esc(s.date)+' · '+dayLabel(s.day)+' (W'+s.week+')</h2>'));
+ a.appendChild(el('<h2 class="scr">'+esc(s.date)+' · '+dayLabel(s.day)+' (Block '+(s.block||2)+' · W'+s.week+')</h2>'));
  var ids=Object.keys(s.entries||{});
  ids.forEach(function(id2){
   var it=itemById(s.day,id2),e=s.entries[id2],lines=[];
@@ -647,7 +666,7 @@ function buildText(){
  if(!DB.sessions.length)return "No sessions logged yet.";
  var out=["ATHLETIC AGING — TRAINING LOG EXPORT","Generated "+today()+" · "+DB.sessions.length+" sessions",""];
  DB.sessions.forEach(function(s){
-  out.push("=== "+s.date+" · "+dayLabel(s.day)+" · Week "+s.week+(s.block===1?" · BLOCK 1":"")+(s.status==="open"?" · IN PROGRESS":"")+(s.autoClosed?" · auto-closed":"")+" ===");
+  out.push("=== "+s.date+" · Block "+(s.block||2)+" · "+dayLabel(s.day)+" · Week "+s.week+(s.status==="open"?" · IN PROGRESS":"")+(s.autoClosed?" · auto-closed":"")+" ===");
   Object.keys(s.entries||{}).forEach(function(id){
    var it=itemById(s.day,id),e=s.entries[id],parts=[];
    (e.sets||[]).forEach(function(st){var t=setStr(it,st);if(t)parts.push(t);});
@@ -666,11 +685,13 @@ function markExported(){DB.lastExport=nowISO();save();}
 /* Sharing: the iPhone share sheet first (works inside a home-screen app,
    where a plain download link silently fails), then download, then plain text. */
 function sendFile(name,text,mime){
- markExported();
  try{
   var file=new File([text],name,{type:mime});
   if(navigator.canShare&&navigator.canShare({files:[file]})&&navigator.share){
-   navigator.share({files:[file],title:name}).catch(function(){fallbackSend(name,text,mime);});
+   navigator.share({files:[file],title:name}).then(function(){markExported();render();}).catch(function(err){
+    if(err&&err.name==="AbortError")return;   /* you cancelled: nothing was sent, nothing is marked */
+    fallbackSend(name,text,mime);
+   });
    return;
   }
  }catch(e){}
@@ -682,6 +703,7 @@ function fallbackSend(name,text,mime){
   var a=document.createElement("a");a.href=u;a.download=name;a.rel="noopener";
   document.body.appendChild(a);a.click();
   setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u);},400);
+  markExported();
   setTimeout(function(){
    if(confirm("If nothing downloaded, tap OK to show the data as text so you can copy it."))showText(text);
   },900);
@@ -701,9 +723,10 @@ function renderData(a){
  var dse=daysSinceExport();
  if(!storageOK)a.appendChild(el('<div class="warn"><b>This device is refusing to save.</b> Export right now — do not close the app first.</div>'));
  if(dse===null)a.appendChild(el('<div class="warn">You have never exported. Do it once now so you know the route works before you need it.</div>'));
- else if(dse>=14)a.appendChild(el('<div class="warn">Last export was '+dse+' days ago. Send a backup.</div>'));
+ else if(dse>=7)a.appendChild(el('<div class="warn">Last backup was '+dse+' days ago. Send one now \u2014 weekly is the rule.</div>'));
  else a.appendChild(el('<div class="ok">Last export: '+dse+' day'+(dse===1?"":"s")+' ago. '+DB.sessions.length+' sessions stored.</div>'));
 
+ a.appendChild(el('<div class="note"><b>Weekly backup:</b> tap <b>Share JSON backup</b> \u2192 Save to Files \u2192 Google Drive \u2192 Claude \u2192 Board of Advisors \u2192 03-Performance \u2192 Sources \u2192 Logger-Backups. The board reads it straight from there.</div>'));
  a.appendChild(el('<div class="mut">The <b>Share</b> buttons open the iPhone share sheet, so you can send straight to Mail, Messages or Files. Use these — a plain download often does nothing inside a home-screen app, which is why exports were failing.</div>'));
 
  var s1=el('<button class="btn">📤 Share CSV (for the board)</button>');
@@ -751,21 +774,22 @@ function renderData(a){
 /* ---------- INFO ---------- */
 function renderInfo(a){
  document.getElementById("hdrS").textContent="Guide";
- a.appendChild(el('<h2 class="scr">How to use</h2>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Nothing can be lost now</b><br>A session is written to storage the moment you start it, and again every time you type a digit. "Mark complete" only tidies the History list. Anything left open for 18 hours closes itself automatically, so a forgotten session still shows up in your export.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Coaching notes and video</b><br>Each exercise has two small buttons. <b>ⓘ Coaching notes</b> opens the board\'s cues for that movement — collapsed by default so the screen stays short between sets. <b>▶ Video</b> opens the demo you picked back in July — all 29 of your curated links are carried over. Exercises that are new this block show <b>▶ Find video</b> instead, which runs a YouTube search for that movement: a search can never go dead on you mid-session.</div>'));
-a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Every box belongs to its exercise</b><br>Pogo hops ask for reps only. Suitcase carry asks for load and distance. Side planks ask for load and seconds. Zone 2 asks for minutes and average heart rate. Jumps ask for distance or height. If a box does not make sense for the movement, that is a bug — tell the board.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Sending your data</b><br>Send tab → <b>Share CSV</b>. The share sheet opens and you pick Mail, Messages or Save to Files. Use Share rather than a download — downloads often silently fail inside a home-screen web app.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Install it like an app</b><br>Open the page in Safari → Share icon → <b>Add to Home Screen</b>. It then opens full-screen and works offline at the gym.</div>'));
+ a.appendChild(el('<h2 class="scr">How to use \u2014 '+esc(BLOCK)+'</h2>'));
+ function card(h,b){a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">'+h+'</b><br>'+b+'</div>'));}
+ card("Up next","The Log tab shows the next session in the rotation (B \u2192 A \u2192 C) and which week you are in, worked out from what you have finished \u2014 not from the calendar. Tap the gold button to start it. You can still pick any week and session underneath.");
+ card("The grey numbers","Each empty box shows this week\u2019s target in grey. If you did exactly that, tap \u2713 at the end of the row and it is logged. If you did something else, type it. Nothing is saved from a row you did not touch.");
+ card("Loads","Every load is a number in pounds. Where the program says \u201c+5%\u201d, the app works it out from your last log of that exercise, rounded to 2.5 lb. \u201cFIND\u201d means first time: pick a load you would finish with about 3 reps left.");
+ card("Rest timer","Tap \u23f1 on an exercise to start its rest. The timer keeps true time if the phone locks or you switch apps, and beeps at the end (turn the ringer on). \u221215 / +15 adjust it.");
+ card("Zone 2 is the warm-up","Every gym day starts with 10 min on the bike at nose-breathing, full-sentence pace. Log minutes and average heart rate. That is the whole week\u2019s Zone 2 unless you choose to add Friday.");
+ card("Weekly backup","Send tab \u2192 Share JSON backup \u2192 Save to Files \u2192 Google Drive \u2192 Claude \u2192 Board of Advisors \u2192 03-Performance \u2192 Sources \u2192 Logger-Backups. The Log tab reminds you after 7 days. Cancelling the share sheet does not count as a backup.");
+ card("Coaching notes and video","\u24d8 opens the board\u2019s cues. \u25b6 Video opens the demo you chose in July where one exists; new exercises show \u25b6 Find video, a YouTube search.");
+ card("Opening a workout you already did","If that week and day already has a record in this block, the app offers it first. Only start a separate one if you really trained it twice. Marking a session complete keeps the date you set.");
+ card("Install it","Safari \u2192 Share \u2192 Add to Home Screen. After the first visit the app opens offline too.");
+ card("Which version am I running?","The build sits under the title. This one is <b>'+esc(BUILD)+'</b>. A gold bar appears at the top when a newer build exists \u2014 tap it.");
  a.appendChild(el('<div class="note">'+esc(LOADRULE)+'</div>'));
  a.appendChild(el('<div class="note">'+esc(RIRRULE)+'</div>'));
  a.appendChild(el('<div class="note">'+esc(PAIRRULE)+'</div>'));
- a.appendChild(el('<div class="note">RIR = reps in reserve. Power: stop while every rep is fast — no RIR. Under v2.4 only ONE lift per gym day goes to 1–2 RIR; everything else is 3.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">What changed in v2.4</b><br>Leg press, the standalone face pull, the Day A dead bug and the Day B side plank are gone. Face pulls moved into the Day B warm-up. Accessories now run as A1/A2 supersets. Day A ~63 min · Day B ~61 min · Day C ~69 min — about 51 min and 11 sets a week less than v2.3, with nothing removed from what you are training for. If a session runs 15+ min over these numbers two weeks running, tell the board.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Which version am I running?</b><br>The build number sits under the title at the top of every screen. This one is <b>'+esc(BUILD)+'</b>. The app checks GitHub for a newer build each time you open it — if one exists, a gold bar appears at the top. Tap it and it reloads clean.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Opening a workout you already did</b><br>Pick the week and the session as usual. If that slot already has a record, the app now stops and offers it to you rather than handing you a blank sheet. Open the existing one to review or correct it. Only start a separate session if you genuinely trained that day twice.</div>'));
- a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">Changing a finished session</b><br>History \u2192 tap any session \u2192 <b>Edit this session</b>. Completed sessions are no longer read-only. Inside a set row, <b>\u00d7</b> deletes that set; if it has numbers in it you get a confirmation first. An exercise always keeps at least one row.</div>'));
-var t=el('<button class="btn sec">Open rest timer</button>');t.onclick=tShow;a.appendChild(t);
+ var t=el('<button class="btn sec">Open rest timer</button>');t.onclick=tShow;a.appendChild(t);
  var cl=el('<button class="btn ghost sm">Clean up blank sessions</button>');
  cl.onclick=function(){
   var e=DB.sessions.filter(function(x){return entryCount(x)===0&&!x.note&&!x.dizzy;});
@@ -785,15 +809,25 @@ var t=el('<button class="btn sec">Open rest timer</button>');t.onclick=tShow;a.a
  };a.appendChild(e);
 }
 
-/* ---------- TIMER ---------- */
-var tLeft=120,tInt=null;
-function fmt(s){var m=Math.floor(s/60),r=s%60;return m+":"+String(r).padStart(2,"0");}
-function tShow(){document.getElementById("tbar").classList.add("on");document.body.classList.add("timer-on");document.getElementById("tm").textContent=fmt(tLeft);}
-function tHide(){document.getElementById("tbar").classList.remove("on");document.body.classList.remove("timer-on");tStop();}
-function tAdj(d){tLeft=Math.max(0,tLeft+d);document.getElementById("tm").textContent=fmt(tLeft);}
+/* ---------- TIMER ----------
+   Counts against a fixed end time, so locking the phone or switching apps cannot stall it:
+   when you come back it shows the true time left. The end is a short beep (the sound is unlocked
+   by your tap on Start) plus vibration where the phone allows it. */
+var tLeft=120,tEnd=0,tInt=null,tCtx=null;
+function fmt(s){s=Math.max(0,Math.round(s));var m=Math.floor(s/60),r=s%60;return m+":"+String(r).padStart(2,"0");}
+function tDraw(){var el2=document.getElementById("tm");if(el2)el2.textContent=fmt(tEnd?(tEnd-Date.now())/1000:tLeft);}
+function tShow(){document.getElementById("tbar").classList.add("on");document.body.classList.add("timer-on");tDraw();}
+function tHide(){document.getElementById("tbar").classList.remove("on","ring");document.body.classList.remove("timer-on");tStop();}
+function tSet(sec){tStop();tLeft=sec;tDraw();}
+function tAdj(d){if(tEnd){tEnd+=d*1000;if(tEnd<Date.now())tEnd=Date.now();}else{tLeft=Math.max(0,tLeft+d);}tDraw();}
 function tToggle(){if(tInt)tStop();else tStart();}
-function tStart(){document.getElementById("tBtn").textContent="Pause";tInt=setInterval(function(){tLeft--;if(tLeft<=0){tLeft=0;tStop();try{navigator.vibrate&&navigator.vibrate(400);}catch(e){}}document.getElementById("tm").textContent=fmt(tLeft);},1000);}
-function tStop(){if(tInt){clearInterval(tInt);tInt=null;}document.getElementById("tBtn").textContent="Start";if(tLeft<=0)tLeft=120;}
+function tUnlock(){try{var C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!tCtx)tCtx=new C();if(tCtx.state==="suspended")tCtx.resume();}catch(e){}}
+function tBeep(){try{if(!tCtx)return;[0,0.35,0.7].forEach(function(o){var g=tCtx.createGain(),os=tCtx.createOscillator();os.frequency.value=880;os.connect(g);g.connect(tCtx.destination);var t0=tCtx.currentTime+o;g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.4,t0+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t0+0.25);os.start(t0);os.stop(t0+0.3);});}catch(e){}
+ try{navigator.vibrate&&navigator.vibrate([300,150,300]);}catch(e){}}
+function tTick(){var left=(tEnd-Date.now())/1000;if(left<=0){tStop(true);document.getElementById("tm").textContent="Rest over";document.getElementById("tbar").classList.add("ring");tBeep();return;}tDraw();}
+function tStart(){tUnlock();document.getElementById("tbar").classList.remove("ring");if(tLeft<=0)tLeft=120;tEnd=Date.now()+tLeft*1000;document.getElementById("tBtn").textContent="Pause";clearInterval(tInt);tInt=setInterval(tTick,250);tTick();}
+function tStop(finished){if(tInt){clearInterval(tInt);tInt=null;}if(tEnd&&!finished){tLeft=Math.max(0,Math.round((tEnd-Date.now())/1000));}if(finished)tLeft=120;tEnd=0;var b=document.getElementById("tBtn");if(b)b.textContent="Start";}
+document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible"&&tEnd)tTick();});
 
 /* ---------- KEYBOARD GUARD (2026-11-08) ----------
    iOS Safari moves position:fixed bars up with the on-screen keyboard and can leave them
@@ -849,6 +883,7 @@ function checkUpdate(){
 }
 boot();
 render();
+if("serviceWorker" in navigator){try{navigator.serviceWorker.register("sw.js").catch(function(){});}catch(e){}}
 var bt=document.getElementById("buildTag");if(bt)bt.textContent="build "+BUILD;
 setTimeout(checkUpdate,1200);
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="visible")checkUpdate();});
