@@ -102,7 +102,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-11-16-f";
+var BUILD="2026-11-16-g";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -135,7 +135,7 @@ var FT={
 var LOADK=["load","loadh"];
 
 /* =========================================================
-   PROGRAM — Block 4 v3 (generated from block4.py, 2026-11-16-f)
+   PROGRAM — Block 4 v3 (generated from block4.py, 2026-11-16-g)
    f: field keys. wk: load per week [W1..W4]; "+5%" etc. is computed from your last log.
    rp: target reps (placeholder). rir: target RIR per week. rest: seconds for the rest timer.
    ========================================================= */
@@ -143,7 +143,7 @@ var BLOCKNUM=4;
 var BLOCK="Block 4";
 var NWEEKS=4;
 var ORDER=["A","B","C"];
-var WEEKTIP={"1": "W1 (Nov 23–29) — RE-ENTRY + TESTS. Every lift at 3 RIR. Tue: left/right screen replaces Pair C. Sun: change-of-direction baseline replaces agility round 3, and the back-extension hold goes last. Learn the leg press, hip thrust, inner-thigh machine and Cossack squat.", "2": "W2 (Nov 30 – Dec 6) — BUILD. The ★ lift at 1–2 RIR. Friday machine lifts (leg press, leg curl, seated calf) at 2. Everything else at 2–3. Random-beep drop-steps start in the agility circuit.", "3": "W3 (Dec 7–13) — PEAK. Top loads. The ★ lift at 1–2 RIR. Friday machine lifts at 1 rep left. Sunday: nothing below 2 (tennis Monday). Agility at 85–90%, never max. Loaded trunk work stays at 2+ RIR.", "4": "W4 (Dec 14–20) — DELOAD + RETEST. ~60–65% loads, about half the sets, 4 RIR. Fri (Day B): broad jump + vertical (same app). Sun: change of direction + back-extension hold. Then Block 5 (leg strength) starts Mon Dec 21."};
+var WEEKTIP={"1": "W1 (Nov 16–22) — RE-ENTRY + TESTS. Every lift at 3 RIR. Tue: left/right screen replaces Pair C. Sun: change-of-direction baseline replaces agility round 3, and the back-extension hold goes last. Learn the leg press, hip thrust, inner-thigh machine and Cossack squat.", "2": "W2 (Nov 23–29) — BUILD. The ★ lift at 1–2 RIR. Friday machine lifts (leg press, leg curl, seated calf) at 2. Everything else at 2–3. Random-beep drop-steps start in the agility circuit.", "3": "W3 (Nov 30 – Dec 6) — PEAK. Top loads. The ★ lift at 1–2 RIR. Friday machine lifts at 1 rep left. Sunday: nothing below 2 (tennis Monday). Agility at 85–90%, never max. Loaded trunk work stays at 2+ RIR.", "4": "W4 (Dec 7–13) — DELOAD + RETEST. ~60–65% loads, about half the sets, 4 RIR. Fri (Day B): broad jump + vertical (same app). Sun: change of direction + back-extension hold. Then Block 5 (leg strength) starts Mon Dec 14."};
 var LOADRULE="LOAD RULE \u2014 beat the top of the rep range by 2+ \u2192 add ~5% next time. Miss the bottom by 2+ \u2192 drop ~10%. Inside the range at the target RIR \u2192 repeat the load. Grey numbers in each row are this week\u2019s target: tap \u2713 to log the set exactly as shown, or type what you actually did.";
 var RIRRULE="RIR RULE \u2014 one lift a day (marked \u2605) goes to 1\u20132 RIR from week 2. Friday machine lifts (leg press, leg curl, seated calf): 2 in week 2, 1 in week 3. Everything else at 2\u20133. Sunday: nothing below 2, tennis is Monday. Week 1 is 3 RIR on everything; week 4 is 4 RIR. Loaded trunk work never below 2 RIR, and exhale every rep.";
 var PAIRRULE="PAIR RULE \u2014 A1/A2, B1/B2, C1/C2 are supersets: A1 \u2192 ~40 s \u2192 A2 \u2192 ~70 s \u2192 back to A1. Never pair the jumps, the med-ball throw, the front squat or the trap bar \u2014 full rest. Tap \u23f1 on any exercise for its rest timer.";
