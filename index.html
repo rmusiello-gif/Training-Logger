@@ -102,7 +102,7 @@ h2.scr{font-size:20px;margin:6px 2px 2px;}
 
 <script>
 "use strict";
-var BUILD="2026-11-16-c";
+var BUILD="2026-11-16-d";
 
 /* =========================================================
    FIELD TYPES — every input is explicitly declared per exercise.
@@ -135,7 +135,7 @@ var FT={
 var LOADK=["load","loadh"];
 
 /* =========================================================
-   PROGRAM — Block 4 v1 (generated from block4.py, 2026-11-16-c)
+   PROGRAM — Block 4 v1 (generated from block4.py, 2026-11-16-d)
    f: field keys. wk: load per week [W1..W4]; "+5%" etc. is computed from your last log.
    rp: target reps (placeholder). rir: target RIR per week. rest: seconds for the rest timer.
    ========================================================= */
@@ -193,7 +193,7 @@ function targetFor(it,week,sid){
    moment it starts. Nothing depends on remembering to press
    Finish. Mirrored to a second key on every write.
    ========================================================= */
-var KEY="aa_logger_v2", MIRROR="aa_logger_v2_mirror", SALVAGE="aa_logger_v2_salvage", OLDKEY="aa_logger_v1";
+var KEY="aa_logger_v2", MIRROR="aa_logger_v2_mirror", SALVAGE="aa_logger_v2_salvage", OLDKEY="aa_logger_v1", TRASH="aa_logger_v2_trash";
 var booted=false;
 var DB={sessions:[],lastExport:null,ver:2};
 var view="log", storageOK=true;
@@ -225,13 +225,17 @@ function boot(){
  DB.ver=2;
  booted=true;
  autoCloseStale();
- save();
+ /* blank sessions in the current block are dropped at launch — they hold nothing */
+ var nb=DB.sessions.length;
+ DB.sessions=DB.sessions.filter(function(s){return !((s.block||2)===BLOCKNUM&&isBlank(s));});
+ save(DB.sessions.length<nb);
 }
 /* Writing is guarded. A save can never silently replace a bigger store with a
    smaller one: any shrink is stashed to a salvage key first, and a save that
    would wipe the store back to zero is refused outright. */
 function save(allowShrink){
  if(!booted)return;
+ allowShrink=(allowShrink===true);   /* an Event object handed over by a listener must never count as permission to shrink */
  DB.updated=nowISO();
  var payload=JSON.stringify(DB);
  try{
@@ -241,8 +245,15 @@ function save(allowShrink){
    if(curN===0&&!allowShrink){            // pathological — refuse and reload the good copy
     DB=prev;storageOK=true;flashSaved();return;
    }
-   try{localStorage.setItem(SALVAGE,JSON.stringify(prev));}catch(e2){}
    payload=JSON.stringify(DB);
+   if(allowShrink){
+    /* a deliberate delete: keep the old copy in a key the app never loads from, and make the
+       salvage copy match, so the next launch cannot bring the deleted session back */
+    try{localStorage.setItem(TRASH,JSON.stringify(prev));}catch(e2){}
+    try{localStorage.setItem(SALVAGE,payload);}catch(e3){}
+   }else{
+    try{localStorage.setItem(SALVAGE,JSON.stringify(prev));}catch(e2){}
+   }
   }
   localStorage.setItem(KEY,payload);
   localStorage.setItem(MIRROR,payload);
@@ -335,10 +346,11 @@ function go(v){view=v;try{window.scrollTo(0,0);}catch(e){}["log","hist","data","
 function render(){var a=document.getElementById("app");a.innerHTML="";if(view==="log")renderLog(a);else if(view==="hist")renderHist(a);else if(view==="data")renderData(a);else renderInfo(a);}
 
 /* ---------- LOG ---------- */
-var sel={week:null},activeId=null,NOTEOPEN={},pending=null;
+var sel={week:null},activeId=null,NOTEOPEN={},pending=null,preview=null;
 function renderLog(a){
  if(activeId){var s=DB.sessions.filter(function(x){return x.id===activeId;})[0];if(s)return renderSession(a,s);activeId=null;}
  if(pending)return renderPending(a);
+ if(preview)return renderPreview(a);
  document.getElementById("hdrS").textContent=BLOCK+" · start or resume a session";
  if(!storageOK)a.appendChild(el('<div class="warn"><b>This device is refusing to save.</b> Do not log a session until this is fixed — go to the Send tab and export what you have now.</div>'));
  var dse=daysSinceExport();
@@ -357,7 +369,7 @@ function renderLog(a){
  var un=upNext();
  if(un){
   var card=el('<div class="upnext"><div class="k">Up next \u00b7 '+esc(BLOCK)+' \u00b7 Week '+un.week+(un.week===4?' (deload)':'')+'</div><div class="d">'+esc(PROGRAM[un.day].label)+' \u2014 '+esc(PROGRAM[un.day].name.split("\u2014")[1]||"")+'</div><div class="m">'+esc(PROGRAM[un.day].short)+(un.tests?' \u00b7 TESTS: '+esc(un.tests):'')+'</div></div>');
-  var go1=el('<button class="btn gold">Start '+esc(PROGRAM[un.day].label)+' \u00b7 Week '+un.week+'</button>');
+  var go1=el('<button class="btn gold">Open '+esc(PROGRAM[un.day].label)+' \u00b7 Week '+un.week+'</button>');
   go1.onclick=function(){sel.week=un.week;chooseSession(un.day,un.week);};
   a.appendChild(card);a.appendChild(go1);
   var row=el('<div class="wkrow"></div>');
@@ -401,7 +413,7 @@ function dayLabel(k){return PROGRAM[k]&&PROGRAM[k].label?PROGRAM[k].label:(PROGR
    week+day that already has a record offers that record first; a brand new
    blank session becomes a deliberate second choice. */
 function sessionsForSlot(day,week){
- return DB.sessions.filter(function(s){return s.day===day&&s.week===week&&(s.block||2)===BLOCKNUM;});
+ return DB.sessions.filter(function(s){return s.day===day&&s.week===week&&(s.block||2)===BLOCKNUM&&!isBlank(s);});
 }
 function entryCount(s){
  return Object.keys(s.entries||{}).filter(function(k){
@@ -409,10 +421,31 @@ function entryCount(s){
   return e&&(e.done||(e.sets||[]).some(function(st){return Object.keys(st).some(function(f){return st[f]!==""&&st[f]!=null;});}));
  }).length;
 }
+/* Tapping a day only LOOKS at it. Nothing is created or saved until "Start this session". */
 function chooseSession(day,week){
- if(!sessionsForSlot(day,week).length){startSession(day,week);return;}
+ try{window.scrollTo(0,0);}catch(e){}
+ if(!sessionsForSlot(day,week).length){preview={day:day,week:week};render();return;}
  pending={day:day,week:week};render();
 }
+function renderPreview(a){
+ var day=preview.day,week=preview.week,fake={id:null,day:day,week:week,entries:{}};
+ document.getElementById("hdrS").textContent=dayLabel(day)+" · Week "+week+" · preview";
+ var back=el('<button class="btn ghost sm">‹ Back</button>');back.onclick=function(){preview=null;render();};a.appendChild(back);
+ a.appendChild(el('<h2 class="scr">'+esc(PROGRAM[day].name)+'</h2>'));
+ a.appendChild(el('<div class="ok"><b>Preview only — nothing is started or saved.</b> Look through the session. Tap Start when you are ready to train.</div>'));
+ function startBtn(){var b=el('<button class="btn gold">Start this session now</button>');b.onclick=function(){preview=null;startSession(day,week);try{window.scrollTo(0,0);}catch(e){}};return b;}
+ a.appendChild(startBtn());
+ a.appendChild(el('<div class="note">'+esc(WEEKTIP[week]||"")+'</div>'));
+ var curSec="";
+ PROGRAM[day].items.forEach(function(it){
+  if(it.s!==curSec){curSec=it.s;a.appendChild(el('<div class="sec-h">'+esc(curSec)+'</div>'));}
+  a.appendChild(exCard(it,fake,true));
+ });
+ a.appendChild(startBtn());
+}
+/* A session with no numbers, no ticks, no notes and no flags is blank. Blank sessions are never kept. */
+function isBlank(s){return !hasData(s)&&!s.note&&!s.dizzy&&!s.arm&&!s.armNote;}
+function dropSession(id){DB.sessions=DB.sessions.filter(function(x){return x.id!==id;});save(true);}
 function renderPending(a){
  var day=pending.day,week=pending.week,m=sessionsForSlot(day,week);
  document.getElementById("hdrS").textContent=dayLabel(day)+" \u00b7 Week "+week;
@@ -437,7 +470,7 @@ function startSession(day,week){
 function renderSession(a,s){
  document.getElementById("hdrS").textContent=dayLabel(s.day)+" · Week "+s.week+" · "+s.date;
  var back=el('<button class="btn ghost sm">‹ Save and close</button>');
- back.onclick=function(){activeId=null;go("log");};a.appendChild(back);
+ back.onclick=function(){if(s.status==="open"&&isBlank(s))dropSession(s.id);activeId=null;go("log");};a.appendChild(back);
  if(s.status==="done")a.appendChild(el('<div class="note"><b>Editing a completed session</b> from '+esc(s.date)+'. Changes save as you type, exactly as during a live session.</div>'));
  var cur=(s.block||2)===BLOCKNUM;
  a.appendChild(el('<h2 class="scr">'+(cur?esc(PROGRAM[s.day].name):'Block '+(s.block||2)+' \u00b7 '+esc(dayLabel(s.day))+' (earlier program)')+'</h2>'));
@@ -494,7 +527,7 @@ function planFor(it,s,fields){
  if(it.rir&&fields.indexOf("rir")>=0){var r=it.rir[s.week-1];if(r!=null)p.rir=r;}
  return p;
 }
-function exCard(it,s){
+function exCard(it,s,ro){
  var ent=s.entries[it.id]||(s.entries[it.id]={sets:[]});
  var card=el('<div class="card"></div>');
  card.appendChild(el('<div class="exn">'+esc(it.n)+'</div>'));
@@ -519,7 +552,7 @@ function exCard(it,s){
    var label=it.v?"▶ Video":"▶ Find video";
    tools.appendChild(el('<a class="tool" target="_blank" rel="noopener" href="'+href+'">'+label+'</a>'));
   }
-  if(it.rest){var rt=el('<div class="tool">\u23f1 Rest '+fmt(it.rest)+'</div>');rt.onclick=function(){tSet(it.rest);tShow();tStart();};tools.appendChild(rt);}
+  if(it.rest&&!ro){var rt=el('<div class="tool">\u23f1 Rest '+fmt(it.rest)+'</div>');rt.onclick=function(){tSet(it.rest);tShow();tStart();};tools.appendChild(rt);}
   card.appendChild(tools);
   if(cueBox)card.appendChild(cueBox);
  }
@@ -535,7 +568,7 @@ function exCard(it,s){
  var fields=(it.f||[]).filter(function(f){return f!=="done";});
  var wantsDone=(it.f||[]).indexOf("done")>=0;
 
- if(fields.length){
+ if(fields.length&&!ro){
   if(ent.sets.length===0){var n=it.sets||3;for(var i=0;i<n;i++)ent.sets.push({});}
   card.appendChild(el('<div class="caps">'+fields.map(function(f){return '<span>'+esc(FT[f].cap)+'</span>';}).join("")+'<span style="flex:0 0 34px"></span></div>'));
   var body=el('<div></div>');
@@ -581,7 +614,7 @@ function exCard(it,s){
   }
   updEst();
  }
- if(wantsDone){
+ if(wantsDone&&!ro){
   var dn=el('<div class="done"><input type="checkbox" '+(ent.done?"checked":"")+'><span class="mut">Mark done</span></div>');
   dn.querySelector("input").addEventListener("change",function(e){ent.done=e.target.checked;s.updated=nowISO();save();});
   card.appendChild(dn);
@@ -777,7 +810,7 @@ function renderInfo(a){
  document.getElementById("hdrS").textContent="Guide";
  a.appendChild(el('<h2 class="scr">How to use \u2014 '+esc(BLOCK)+'</h2>'));
  function card(h,b){a.appendChild(el('<div class="card mut"><b style="color:var(--txt)">'+h+'</b><br>'+b+'</div>'));}
- card("Up next","The Log tab shows the next session in the rotation (A \u2192 B \u2192 C) and which week you are in, worked out from what you have finished \u2014 not from the calendar. Tap the gold button to start it. You can still pick any week and session underneath.");
+ card("Up next","The Log tab shows the next session in the rotation (A \u2192 B \u2192 C) and which week you are in, worked out from what you have finished \u2014 not from the calendar. Tap the gold button to look through it. Tapping a day is only a preview: nothing starts or saves until you tap Start this session now. A session you start and leave empty is discarded. You can still pick any week and session underneath.");
  card("The grey numbers","Each empty box shows this week\u2019s target in grey. If you did exactly that, tap \u2713 at the end of the row and it is logged. If you did something else, type it. Nothing is saved from a row you did not touch.");
  card("Loads","Every load is a number in pounds. Where the program says \u201c+5%\u201d, the app works it out from your last log of that exercise, rounded to 2.5 lb. \u201cFIND\u201d means first time: pick a load you would finish with about 3 reps left.");
  card("Rest timer","Tap \u23f1 on an exercise to start its rest. The timer keeps true time if the phone locks or you switch apps, and beeps at the end (turn the ringer on). \u221215 / +15 adjust it.");
@@ -865,7 +898,7 @@ document.addEventListener("visibilitychange",function(){if(document.visibilitySt
 
 /* save again whenever the app is backgrounded — iOS kills tabs aggressively */
 document.addEventListener("visibilitychange",function(){if(document.visibilityState==="hidden")save();});
-window.addEventListener("pagehide",save);
+window.addEventListener("pagehide",function(){save();});
 
 function doUpdate(){
  var base=location.href.split("?")[0].split("#")[0];
